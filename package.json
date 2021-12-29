@@ -9,6 +9,17 @@
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
   "engines": {
-    "node": "~14.18.0"
+    "node": ">=14.18"
+  },
+  "dependencies": {
+    "celebrate": "^15.0.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "helmet": "^4.6.0",
+    "pino": "^7.6.2",
+    "pino-http": "^6.5.0",
+    "prisma": "^3.7.0"
   }
 }
