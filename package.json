@@ -1,0 +1,11 @@
+{
+  "name": "products-api-challenge",
+  "version": "1.0.0",
+  "description": "a RESTful API to manage products information built with Express and Postgres following SOLID principles and best practices.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raul Quispe <relaxedchild@gmail.com>",
+  "license": "ISC"
+}
