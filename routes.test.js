@@ -10,3 +10,11 @@ describe('GET /', () => {
     expect(response.body.message).toEqual('Hello world - Products API');
   });
 });
+
+describe('404 - Not Found', () => {
+  test('when route requested is unset, responds with 404 status code', async () => {
+    const response = await request(app).get('/whatever');
+
+    expect(response.status).toBe(404);
+  });
+});
