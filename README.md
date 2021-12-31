@@ -14,7 +14,7 @@
 ### Logging response time
 
 The current logger ([Pino](https://github.com/pinojs/pino)) logs by default the
-response time of every request with the key `responseTime`. So, you don't have to worry doing it yourself!
+response time of every request with the key `responseTime`.
 
 _Note_ The `responseTime` value will be in milliseconds (ms).
 

@@ -4,7 +4,7 @@
   "description": "a RESTful API to manage products information built with Express and Postgres following SOLID principles and best practices.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "cross-env NODE_ENV=development nodemon bin/www | npx pino-pretty -t SYS:standard"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
