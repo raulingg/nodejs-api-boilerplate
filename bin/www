@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 const http = require('http');
+const { createTerminus } = require('@godaddy/terminus');
 const app = require('../app');
 const { errorHandler } = require('../utils');
 
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
+
+createTerminus(server, {
+  signals: ['SIGTERM', 'SIGINT'],
+});
 
 console.log(`server running at http://localhost:${port}`);
 server.listen(port);
