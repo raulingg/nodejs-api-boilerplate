@@ -1,12 +1,10 @@
+const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const express = require('express');
 const expressPinoLogger = require('express-pino-logger');
-const logger = require('./services/loggerService');
+const { errors } = require('celebrate');
+const { logger, errorHandler } = require('./utils');
 
-/**
- * app instance initialization.
- */
 const app = express();
 
 /**
@@ -30,9 +28,28 @@ require('./routes')(app);
  * 404 handler.
  */
 app.use((req, res) => {
-  req.log.info('404 code');
   res.statusCode = 404;
   res.send('Not Found!');
+});
+
+/**
+ * Request-validation error middleware
+ */
+app.use(errors());
+
+/**
+ * Global error middleware
+ */
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const isOperational = errorHandler.handleError(err);
+  const inProduction = process.env.NODE_ENV === 'production';
+  const status = isOperational ? err.statusCode : 500;
+  const message = inProduction && status === 500 ? 'Something went wrong!' : err.message;
+
+  res.status(status).json({ message });
+
+  if (!isOperational) process.emit('SIGINT');
 });
 
 module.exports = app;
