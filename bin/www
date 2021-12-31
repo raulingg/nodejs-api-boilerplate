@@ -1,9 +1,17 @@
 #!/usr/bin/env node
-
+/* eslint-disable no-console */
 const http = require('http');
 const app = require('../app');
+const { errorHandler } = require('../utils');
 
 const server = http.createServer(app);
+const port = process.env.PORT || 3000;
 
-console.log(`app running -> http://localhost:8080`);
-server.listen(8080);
+console.log(`server running at http://localhost:${port}`);
+server.listen(port);
+
+process.on('uncaughtException', (err) => {
+  const isOperational = errorHandler.handleError(err);
+
+  if (!isOperational) process.emit('SIGINT');
+});
