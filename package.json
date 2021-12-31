@@ -12,6 +12,7 @@
     "node": ">=14.18"
   },
   "dependencies": {
+    "@godaddy/terminus": "^4.9.0",
     "celebrate": "^15.0.0",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
