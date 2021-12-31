@@ -10,6 +10,12 @@ const port = process.env.PORT || 3000;
 console.log(`server running at http://localhost:${port}`);
 server.listen(port);
 
+process.on('unhandledRejection', (err) => {
+  // since we already have fallback handler for unhandled errors (see below),
+  // let throw and let him handle that
+  throw err;
+});
+
 process.on('uncaughtException', (err) => {
   const isOperational = errorHandler.handleError(err);
 
