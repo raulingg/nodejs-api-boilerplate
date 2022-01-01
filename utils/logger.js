@@ -1,4 +1,5 @@
 const pino = require('pino');
+const config = require('../config');
 
 const customLevels = {
   http: 10,
@@ -12,6 +13,7 @@ const customLevels = {
 module.exports.logger = pino(
   // link: https://github.com/pinojs/pino/blob/master/docs/api.md#options
   {
+    enabled: config.logger.enabled,
     customLevels,
     useOnlyCustomLevels: true,
     level: 'http',

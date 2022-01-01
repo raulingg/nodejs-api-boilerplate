@@ -16,4 +16,7 @@ module.exports = {
   db: {
     uri: process.env.DATABASE_URI || ':memory:',
   },
+  logger: {
+    enabled: process.env.NODE_ENV !== 'test',
+  },
 };

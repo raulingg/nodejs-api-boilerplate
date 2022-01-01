@@ -1,3 +1,7 @@
+const updateProductMiddleware = require('./updateProductMiddleware');
+const createProductMiddleware = require('./createProductMiddleware');
+
 module.exports = {
-  createProductMiddleware: require('./createProductMiddleware'),
+  createProductMiddleware,
+  updateProductMiddleware,
 };
