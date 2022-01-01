@@ -6,7 +6,9 @@
 
 ![master-detail-product-datamodel](https://user-images.githubusercontent.com/9435850/147842410-d82a26d0-cf5f-4cb5-8c23-9893bc3a6447.png)
 
-## Methods
+Take a look at [prisma/schema.prisma](prisma/schema.prisma)
+
+## HTTP verbs
 
 ### POST /products
 
@@ -18,10 +20,10 @@
         "title": "new product",
         "description": "any description",
         "price": 12.11,
-        "quantity" : 1, // opcional
-        "image": "https://picsum.photos/id/237/200/300", //opcional
-        "categoryId": 1, // opcional
-        "available": true
+        "quantity" : 1, // optional
+        "image": "https://picsum.photos/id/237/200/300", //optional
+        "categoryId": 1, // optional
+        "available": true // optional
     }
     ```
 
@@ -51,9 +53,9 @@
         "title": "new product",
         "description": "any description",
         "price": 12.11,
-        "quantity" : 1, // opcional
-        "image": "https://picsum.photos/id/237/200/300", //opcional
-        "categoryId": 1, // opcional
+        "quantity" : 1,
+        "image": "https://picsum.photos/id/237/200/300",
+        "categoryId": 1,
         "available": false
     }
     ```
