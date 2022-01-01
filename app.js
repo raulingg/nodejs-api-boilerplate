@@ -47,6 +47,7 @@ app.use((err, req, res, next) => {
   const status = isOperational ? err.statusCode : 500;
   const message = inProduction && status === 500 ? 'Something went wrong!' : err.message;
 
+  console.log(err);
   res.status(status).json({ message });
 
   if (!isOperational) process.emit('SIGINT');

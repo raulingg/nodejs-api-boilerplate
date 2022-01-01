@@ -31,7 +31,11 @@ const ProductService = ({ productModel, categoryModel }) => {
 
     return productModel.update({
       where: { id },
-      data: { ...rest, categoryId, productInventory: { update: { quantity } } },
+      data: {
+        ...rest,
+        ...(categoryId !== null && { categoryId }),
+        productInventory: { update: { quantity } },
+      },
     });
   };
 

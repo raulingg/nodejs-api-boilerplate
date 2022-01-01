@@ -7,9 +7,9 @@ const updateProductMiddleware = celebrate({
     description: Joi.string().required(),
     price: Joi.number().precision(2).positive().required(),
     quantity: Joi.number().positive().required(),
-    image: Joi.string().uri().default(null),
     available: Joi.bool().required(),
-    categoryId: Joi.number().positive(),
+    image: Joi.string().uri().default(null),
+    categoryId: Joi.number().positive().default(null),
   }),
   [Segments.PARAMS]: { id: Joi.number().positive().required() },
 });

@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
-    "test": "dotenv -e .env.test jest . -- --watch",
-    "test:coverage": "dotenv -e .env.test jest . -- --coverage"
+    "test:coverage": "dotenv -e .env.test jest . -- --coverage",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "migrate:init": "dotenv -e .env.dev prisma migrate dev --name init",
+    "test": "npm run docker:up && dotenv -e .env.test prisma migrate deploy && jest . && npm run docker:down"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
