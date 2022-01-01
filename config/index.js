@@ -11,9 +11,6 @@ module.exports = {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: false,
   },
-  db: {
-    uri: process.env.DATABASE_URI || ':memory:',
-  },
   logger: {
     enabled: process.env.NODE_ENV !== 'test',
   },
