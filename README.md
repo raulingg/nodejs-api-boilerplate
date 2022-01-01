@@ -1,5 +1,7 @@
 # Products JSON API
 
+[🔗 Link to Demo in Heroku](https://murmuring-mesa-59619.herokuapp.com/)
+
 ## Data model
 
 ![master-detail-product-datamodel](https://user-images.githubusercontent.com/9435850/147842410-d82a26d0-cf5f-4cb5-8c23-9893bc3a6447.png)
