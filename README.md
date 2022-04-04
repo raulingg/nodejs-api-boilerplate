@@ -109,7 +109,7 @@ This repo somewhat follows the best practices from [nodebestpractices repo](http
 
 CORS will be available when `NODE_ENV` envar is set to `production`.
 To specify which origins will be allowed to make requests, set the `CORS_ORIGINS` envar,
-otherwise no origin will be allow.
+otherwise no origin will be allowed.
 
 - To allow any origin `CORS_ORIGINS=*`
 - To allow specific origins `CORS_ORIGINS=mydomain.com,other-domain.com`
