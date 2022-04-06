@@ -2,80 +2,10 @@
 
 [🔗 Link to Demo in Heroku](https://murmuring-mesa-59619.herokuapp.com/)
 
-## Data model
 
-![master-detail-product-datamodel](https://user-images.githubusercontent.com/9435850/147842410-d82a26d0-cf5f-4cb5-8c23-9893bc3a6447.png)
+## Good Practices
 
-Take a look at [prisma/schema.prisma](prisma/schema.prisma)
-
-## HTTP verbs
-
-### POST /products
-
-- **Request example**
-
-    ```json
-    {
-        "sku": "122737445",
-        "title": "new product",
-        "description": "any description",
-        "price": 12.11,
-        "quantity" : 1, // optional
-        "image": "https://picsum.photos/id/237/200/300", //optional
-        "categoryId": 1, // optional
-        "available": true // optional
-    }
-    ```
-
-- **Response example**
-
-  - status code: `201`
-  - body
-
-    ```json
-    {
-        "sku": "122737445",
-        "title": "new product",
-        "description": "any description",
-        "price": 12.11,
-        "image": "https://picsum.photos/id/237/200/300", //opcional
-        "available": true
-    }
-    ```
-
-### PUT /products/:id
-
-- **Request example**
-
-    ```json
-    {
-        "sku": "122737445",
-        "title": "new product",
-        "description": "any description",
-        "price": 12.11,
-        "quantity" : 1,
-        "image": "https://picsum.photos/id/237/200/300",
-        "categoryId": 1,
-        "available": false
-    }
-    ```
-
-- **Response example**
-
-  - status code: `204`
-
-## Implementation requirements
-
-1. Follow the REST architectural style 🆗
-    - Node.js 14.18.0 🆗
-    - any framework: express, fastify, etc. It’s a plus to use Nest.js 🆗
-2. Follow SOLID patterns. ❗
-3. Follow TDD (Unit tests and 1 integration test) ❗
-4. Use good patterns to validate requests and responses 🆗
-5. Use other good code practices or programming principles. Clean code. 🆗
-6. Follow good practices to build REST APIs ❗
-7. Configure CORS 🆗
-8. Use typescript 🤦🏽‍♂️
+This repo somewhat follows the best practices from [nodebestpractices repo](https://github.com/goldbergyoni/nodebestpractices) in Github.
 
 ## Logging
 
@@ -101,9 +31,6 @@ Log destinations should not be hard-coded by developers within the application c
 
 [🔗 Read More: Log Routing](https://github.com/goldbergyoni/nodebestpractices/blob/master/sections/production/logrouting.md)
 
-## Good Practices
-
-This repo somewhat follows the best practices from [nodebestpractices repo](https://github.com/goldbergyoni/nodebestpractices) in Github.
 
 ## CORS configuration
 
