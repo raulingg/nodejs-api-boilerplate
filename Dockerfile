@@ -1,32 +1,32 @@
+# Dev stage
+FROM node:18.1.0 as build
+
+USER node
+EXPOSE 8080
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+# ✅ Safe install
+RUN npm ci
+COPY . .
+
+CMD [ "node", "app.js" ]
+
 # Run-time stage
-FROM node:18.1.0-alpine as prod
+FROM node:18.1.0-alpine as app
 
 # Set non-root user and expose port 8080
 USER node
 EXPOSE 8080
 
-WORKDIR /home/node/app
+WORKDIR /app
 
-# Copy dependency information and install production-only dependencies
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci --only=production
+COPY --chown=node:node --from=build /app/package.json /app/package-lock.json ./
+COPY --chown=node:node --from=build /app/node_modules ./node_modules
+COPY --chown=node:node --from=build /app/src ./src
 
-# Copy results from previous stage
-COPY --chown=node:node --from=build /home/node/app/dist ./dist
-
-CMD [ "node", "app.js" ]
-
-# Dev stage
-FROM node:18.1.0 as dev
-
-USER node
-EXPOSE 8080
-
-WORKDIR /home/node/app
-
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm ci
-
-COPY --chown=node:node --from=build /home/node/app/dist ./dist
+# ✅ Clean dev packages
+RUN npm prune --production
 
 CMD [ "node", "app.js" ]
