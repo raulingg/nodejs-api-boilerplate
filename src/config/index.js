@@ -2,17 +2,13 @@ const inDevelopment = process.env.NODE_ENV === 'development';
 
 module.exports = {
   app: {
-    env: process.env.NODE_ENV || 'development',
+    env: process.env.NODE_ENV || 'production',
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || 3000,
   },
   db: {
-    connectionString: process.env.DB_URL,
-    connectionOptions: {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-    }
+    connectionString: process.env.MONGO_URI,
+    connectionOptions: {}
   },
   cors: {
     origin: inDevelopment ? true : (process.env.CORS_ORIGINS || '').split(',') || false,

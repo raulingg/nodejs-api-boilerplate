@@ -9,3 +9,5 @@
 **/.editorconfig
 **/.aws
 **/dist
+**/log
+*Dockerfile*
