@@ -1,5 +1,9 @@
 const { Router } = require('express');
-const { createImageMiddleware, updateImageMiddleware } = require('../middlewares');
+const {
+  createImageMiddleware,
+  updateImageMiddleware,
+  deleteImageMiddleware,
+} = require('./middlewares');
 const { ImageService } = require('../services');
 
 const router = Router();
@@ -16,6 +20,15 @@ router.post('/', createImageMiddleware, async (req, res, next) => {
 router.patch('/:id', updateImageMiddleware, async (req, res, next) => {
   try {
     await ImageService.updateById(req.params.id, req.body);
+    res.status(204).json();
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:id', deleteImageMiddleware, async (req, res, next) => {
+  try {
+    await ImageService.deleteById(req.params.id);
     res.status(204).json();
   } catch (err) {
     next(err);

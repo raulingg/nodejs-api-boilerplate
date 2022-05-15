@@ -2,9 +2,9 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const config = require('../../../config');
 const app = require('../../../app');
-const { Image } = require('../models');
+const Image = require('../models/Image');
 
-describe('Images API', () => {
+describe('Images', () => {
   const endpoint = '/images';
   const imageBody = {
     name: 'my-image',
@@ -46,7 +46,7 @@ describe('Images API', () => {
     });
   });
 
-  describe(`PATCH ${endpoint}`, () => {
+  describe(`PATCH ${endpoint}/:id`, () => {
     test('When updating an image with valid data, get back 204 response', async () => {
       const updatedImage = { ...imageBody, name: 'my-new-name' };
 
@@ -58,9 +58,23 @@ describe('Images API', () => {
       expect(response.status).toBe(204);
     });
 
-    test('When providing an invalid id, get back 400 response', async () => {
+    test('When providing an invalid image id, get back 400 response', async () => {
       const response = await request(app).patch(`${endpoint}/null`).send(imageBody);
 
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe(`DELETE ${endpoint}/:id`, () => {
+    test('When deleting an image with valid id, get back 204 response', async () => {
+      const createImageResponse = await request(app).post(endpoint).send(imageBody);
+      const response = await request(app).delete(`${endpoint}/${createImageResponse.body._id}`);
+
+      expect(response.status).toBe(204);
+    });
+
+    test('When providing an invalid image id, get back 400 response', async () => {
+      const response = await request(app).delete(`${endpoint}/null`);
       expect(response.status).toBe(400);
     });
   });
