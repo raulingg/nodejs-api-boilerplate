@@ -1,5 +1,5 @@
 # Dev stage
-FROM node:18.1.0 as build
+FROM node:18.1.0 as builder
 
 USER node
 EXPOSE 8080
@@ -11,8 +11,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 
-CMD [ "node", "app.js" ]
-
 # Run-time stage
 FROM node:18.1.0-alpine as app
 
@@ -22,11 +20,10 @@ EXPOSE 8080
 
 WORKDIR /app
 
-COPY --chown=node:node --from=build /app/package.json /app/package-lock.json ./
-COPY --chown=node:node --from=build /app/node_modules ./node_modules
-COPY --chown=node:node --from=build /app/src ./src
+COPY --chown=node:node --from=builder /app/package.json /app/package-lock.json ./
+COPY --chown=node:node --from=builder /app/node_modules ./node_modules
+COPY --chown=node:node --from=builder /app/src ./src
 
-# ✅ Clean dev packages
-RUN npm prune --production
+ENV NODE_ENV=production
 
-CMD [ "node", "app.js" ]
+CMD [ "node", "src/www/bin" ]

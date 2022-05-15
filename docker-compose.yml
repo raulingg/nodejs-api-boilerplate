@@ -1,15 +1,20 @@
-# Set the version of docker compose to use
 version: '3.9'
 
-# The containers that compose the project
 services:
-  db:
-    image: postgres:13
-    restart: always
-    container_name: integration-tests-prisma
+  app:
+    build:
+      context: .
+    container_name: images-api
+    restart: unless-stopped
     ports:
-      - '5433:5432'
-    environment:
-      POSTGRES_USER: prisma
-      POSTGRES_PASSWORD: prisma
-      POSTGRES_DB: tests
+      - 8080:8080
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:4.4
+    container_name: images-db
+    restart: always
+    command: --serviceExecutor adaptive
+    ports:
+      - 27017:27017
+

@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  app:
+    ports:
+      - 8081:8081
+    environment:
+      NODE_ENV: development
+      PORT: 8081
+      MONGO_URI: mongodb://images-db:27017/images
+    command: [ "node_modules/.bin/nodemon", "--config", "nodemon.json", "src/bin/www" ]
+    volumes:
+      - ./src:/app/src
