@@ -4,11 +4,9 @@
   "description": "a RESTful API to manage products information built with Express and Postgres following SOLID principles and best practices.",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run docker:up && dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "migrate:init": "dotenv -e .env.dev prisma migrate dev --name init",
-    "test": "npm run docker:up && dotenv -e .env.test prisma migrate deploy && jest . && npm run docker:down"
+    "dev": "dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
+    "test": "dotenv -e .env.test jest | npx pino-pretty -t SYS:standard",
+    "test:watch": "dotenv -e .env.test jest --watch"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
@@ -17,28 +15,26 @@
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",
-    "@prisma/client": "^3.7.0",
     "celebrate": "^15.0.0",
     "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
     "express": "^4.17.2",
     "express-pino-logger": "^7.0.0",
     "helmet": "^4.6.0",
     "mongoose": "^6.3.3",
-    "pino": "^7.6.2",
-    "sqlite3": "^5.0.2"
+    "pino": "^7.6.2"
   },
   "devDependencies": {
     "dotenv-cli": "^4.1.1",
     "eslint": "^8.5.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^25.3.3",
+    "eslint-plugin-prettier": "^4.0.0",
     "jest": "^27.4.5",
     "nodemon": "^2.0.16",
     "pino-pretty": "^7.3.0",
-    "prettier": "^2.5.1",
+    "prettier": "2.6.2",
     "supertest": "^6.1.6"
   }
 }
