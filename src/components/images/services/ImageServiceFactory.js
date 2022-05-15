@@ -1,11 +1,11 @@
-const ImageService = (ImageModel) => {
+const ImageServiceFactory = (ImageModel) => {
   const create = (newImage) => ImageModel.create(newImage);
 
-  const updateById = (id, updates) => ImageModel.updateOne({ id }, updates);
+  const updateById = (_id, updates) => ImageModel.updateOne({ _id }, updates);
 
-  const deleteById = (id) => ImageModel.deleteOne({ id });
+  const deleteById = (_id) => ImageModel.deleteOne({ _id });
 
   return { create, updateById, deleteById };
 };
 
-module.exports = ImageService;
+module.exports = ImageServiceFactory;
