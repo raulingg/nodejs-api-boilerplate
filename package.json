@@ -12,7 +12,7 @@
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
   "engines": {
-    "node": ">=14.18"
+    "node": ">=18"
   },
   "dependencies": {
     "@godaddy/terminus": "^4.9.0",
