@@ -15,7 +15,7 @@ router.post('/', createImageMiddleware, async (req, res, next) => {
 
 router.patch('/:id', updateImageMiddleware, async (req, res, next) => {
   try {
-    await ImageService.updateById(req.id, req.body);
+    await ImageService.updateById(req.params.id, req.body);
     res.status(204).json();
   } catch (err) {
     next(err);
