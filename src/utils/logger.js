@@ -10,7 +10,7 @@ const customLevels = {
   fatal: 60,
 };
 // TODO: Log Routing 🤔
-module.exports.logger = pino(
+module.exports = pino(
   // link: https://github.com/pinojs/pino/blob/master/docs/api.md#options
   {
     enabled: config.logger.enabled,
