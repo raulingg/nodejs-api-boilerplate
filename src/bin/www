@@ -5,31 +5,25 @@ const mongoose = require('mongoose');
 const { createTerminus } = require('@godaddy/terminus');
 const app = require('../app');
 const config = require('../config');
-
 const { errorHandler } = require('../utils');
 
-const {port, host } = config.app;
+const { port, host } = config.app;
 
 /**
  * ODM initialization.
  */
 mongoose
   .connect(config.db.connectionString, config.db.connectionOptions)
-  .then(()=> console.log(`DB connected`))
+  .then(() => {
+    const server = http.createServer(app);
+    createTerminus(server, { signals: ['SIGTERM', 'SIGINT'] });
+
+    server.listen(port);
+    console.log(`server running at http://${host}:${port}`);
+
+    mongoose.connection.on('error', console.error);
+  })
   .catch(console.error);
-
-mongoose.connection
-  .on('error', console.error)
-  .on('')
-
-const server = http.createServer(app);
-
-createTerminus(server, {
-  signals: ['SIGTERM', 'SIGINT'],
-});
-
-console.log(`server running at http://${host}:${port}`);
-server.listen(port);
 
 process.on('unhandledRejection', (err) => {
   // since we already have fallback handler for unhandled errors (see below),
