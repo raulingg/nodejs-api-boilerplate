@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
-    "test": "dotenv -e .env.test jest | npx pino-pretty -t SYS:standard",
-    "test:watch": "dotenv -e .env.test jest --watch"
+    "test": "dotenv -e .env.test jest",
+    "test:watch": "dotenv -e .env.test jest -- --watch",
+    "test:coverage": "dotenv -e .env.test jest -- --coverage"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
