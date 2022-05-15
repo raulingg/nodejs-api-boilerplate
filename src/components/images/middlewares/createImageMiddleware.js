@@ -11,10 +11,10 @@ const createProductRequestSchema = celebrate({
     source: Joi.object({
       action: Joi.object({
         type: Joi.string().trim(),
-        enum: Joi.string().valid('UPLOAD', 'FETCH', 'TASK')
+        enum: Joi.string().valid('UPLOAD', 'FETCH', 'TASK'),
       }).allow(null),
-      url: Joi.string().trim()
-    })
+      url: Joi.string().trim(),
+    }),
   }),
 });
 
