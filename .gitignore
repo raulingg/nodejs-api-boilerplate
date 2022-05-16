@@ -111,5 +111,9 @@ temp/
 # Sqlite Database
 *.sqlite
 *.sqlite3
-/prisma/*.db
+
+# Cypress artifacts
+cypress/videos
+cypress/downloads
+cypress/screenshots
 # End of https://www.gitignore.io/api/node
