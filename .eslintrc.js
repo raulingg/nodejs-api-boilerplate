@@ -1,10 +1,8 @@
 module.exports = {
-  extends: ['airbnb-base', 'plugin:jest/recommended', 'plugin:prettier/recommended'],
-  plugins: ['jest'],
+  extends: ['airbnb-base', 'plugin:cypress/recommended', 'plugin:prettier/recommended'],
   env: {
     node: true,
     es2021: true,
-    jest: true,
   },
   rules: {
     'global-require': 0,
