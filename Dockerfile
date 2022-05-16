@@ -26,4 +26,4 @@ COPY --chown=node:node --from=builder /app/src ./src
 
 ENV NODE_ENV=production
 
-CMD [ "node", "src/www/bin" ]
+CMD [ "node", "src/bin/www" ]
