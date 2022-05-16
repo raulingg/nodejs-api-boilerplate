@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
-    "cypress:run": "dotenv -e env.test cypress run",
-    "cypress:open": "dotenv -e env.test cypress open"
+    "cypress:run": "dotenv -e .env.test cypress run",
+    "cypress:open": "dotenv -e .env.test cypress open"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
