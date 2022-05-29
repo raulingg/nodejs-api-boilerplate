@@ -1,4 +1,5 @@
-const { default: mongoose } = require('mongoose');
+const dockerCompose = require('docker-compose');
+const mongoose = require('mongoose');
 
 const { env } = process;
 
@@ -12,11 +13,12 @@ const isCI = !!(
 module.exports = async () => {
   if (isCI) {
     // ️️️✅ Best Practice: Leave the DB up in dev environment
-    await globalThis.__ENVIRONMENT__.stop();
+    dockerCompose.down();
   } else {
     // ✅ Best Practice: Clean the database occasionally
     // eslint-disable-next-line no-lonely-if
     if (Math.ceil(Math.random() * 10) === 10) {
+      await mongoose.connect(`mongodb://localhost:27018/images-test`);
       await mongoose.connection.db.dropDatabase();
     }
   }

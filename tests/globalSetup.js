@@ -1,18 +1,22 @@
 const path = require('path');
-const { DockerComposeEnvironment, Wait } = require('testcontainers');
+const dockerCompose = require('docker-compose');
+const isPortReachable = require('is-port-reachable');
 
 module.exports = async () => {
   console.time('globalSetup');
 
-  // ️️️✅ Best Practice: Start the infrastructure within a test hook - No failures occur because the DB is down
-  const composeFile = 'docker-compose.test.yml';
-  const composeFilePath = path.resolve(__dirname, '..');
-  const environment = await new DockerComposeEnvironment(composeFilePath, composeFile)
-    .withExposedPorts(27017)
-    .withWaitStrategy('mongo_1', Wait.forHealthCheck())
-    .up();
+  // ️️️✅ Best Practice: Speed up during development, if already live then do nothing
+  const isDBReachable = await isPortReachable(27018);
 
-  globalThis.__ENVIRONMENT__ = environment;
-  // 👍🏼 We're ready
+  if (!isDBReachable) {
+    // ️️️✅ Best Practice: Start the infrastructure within a test hook - No failures occur because the DB is down
+    await dockerCompose.upAll({
+      cwd: path.join(__dirname),
+      log: true,
+      // commandOptions: ['-f', 'docker-compose.test.yml'],
+    });
+    // 👍🏼 We're ready
+  }
+
   console.timeEnd('globalSetup');
 };
