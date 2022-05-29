@@ -8,7 +8,7 @@ module.exports = {
   },
   db: {
     connectionString: process.env.MONGO_URI,
-    connectionOptions: {}
+    connectionOptions: {},
   },
   cors: {
     origin: inDevelopment ? true : (process.env.CORS_ORIGINS || '').split(',') || false,
