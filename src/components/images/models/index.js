@@ -1,5 +1,5 @@
-const Image = require('./Image')
+const Image = require('./Image');
 
 module.exports = {
-    Image
+  Image,
 };

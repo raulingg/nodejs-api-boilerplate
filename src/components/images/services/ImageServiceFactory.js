@@ -1,7 +1,13 @@
 const ImageServiceFactory = (ImageModel) => {
-  const create = (newImage) => ImageModel.create(newImage);
+  const create = async (newImage) => {
+    const imageInstance = await ImageModel.create(newImage);
+    return imageInstance.toObject();
+  };
 
-  const updateById = (_id, updates) => ImageModel.updateOne({ _id }, updates);
+  const updateById = async (_id, updates) => {
+    const imageInstance = await ImageModel.updateOne({ _id }, updates);
+    return imageInstance.toObject();
+  };
 
   const deleteById = (_id) => ImageModel.deleteOne({ _id });
 
