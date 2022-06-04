@@ -2,6 +2,7 @@ const { default: axios } = require('axios');
 const isPortReachable = require('is-port-reachable');
 const { default: mongoose } = require('mongoose');
 const app = require('../../../src/app');
+const responses = require('../../utils/responses');
 
 const defaultImageProps = {
   name: 'my-image',
@@ -71,30 +72,77 @@ afterAll(async () => {
 describe('Images API', () => {
   const endpoint = '/images';
 
-  describe(`POST ${endpoint}`, () => {
-    it('When adding a new valid image, Then should get back a 201 response', async () => {
+  describe(`GET ${endpoint.concat('/:id')}`, () => {
+    it('When fetching an image by id, Then should get back one document', async () => {
       // Arrange
       const imageBody = fakeImageObject();
+      const createResponse = await axiosAPIClient.post(endpoint, imageBody);
+      const { id } = createResponse.data;
+      const url = endpoint.concat('/', id);
+
       // Act
-      const response = await axiosAPIClient.post(endpoint, imageBody);
+      const { data, status } = await axiosAPIClient.get(url);
       // Assert
-      expect(response.status).toBe(201);
-      expect(response.data).toStrictEqual({
-        id: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        state: { actions: [] },
-        ...imageBody,
+
+      expect({ data, status }).toStrictEqual({
+        status: 200,
+        data: {
+          ...imageBody,
+          id,
+          state: { actions: [] },
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      });
+    });
+
+    it('When providing an invalid image id, get back 400 response', async () => {
+      const invalidImageId = 'null';
+      const imageBody = fakeImageObject();
+      const url = endpoint.concat('/', invalidImageId);
+
+      const { status, data } = await axiosAPIClient.patch(url, imageBody);
+
+      expect({ status, data }).toStrictEqual(
+        responses.badRequestWithValidation({
+          keys: ['id'],
+          message: '"id" contains an invalid value',
+          source: 'params',
+        }),
+      );
+    });
+  });
+
+  describe(`POST ${endpoint}`, () => {
+    it('When adding a new valid image, Then should get back a 201 response', async () => {
+      const imageBody = fakeImageObject();
+
+      const { data, status } = await axiosAPIClient.post(endpoint, imageBody);
+
+      expect({ status, data }).toStrictEqual({
+        status: 201,
+        data: {
+          ...imageBody,
+          id: expect.any(String),
+          state: { actions: [] },
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
       });
     });
 
     it('When adding an image without specifying name, get back 400 response', async () => {
       const { name, ...imageBody } = fakeImageObject();
 
-      const response = await axiosAPIClient.post(endpoint, imageBody);
+      const { status, data } = await axiosAPIClient.post(endpoint, imageBody);
 
-      expect(response.status).toBe(400);
-      expect(response.data.validation.body.message).toBe('"name" is required');
+      expect({ status, data }).toStrictEqual(
+        responses.badRequestWithValidation({
+          message: '"name" is required',
+          keys: ['name'],
+          source: 'body',
+        }),
+      );
     });
   });
 
@@ -102,13 +150,28 @@ describe('Images API', () => {
     it('When updating an image with valid data, get back 204 response', async () => {
       const imageBody = fakeImageObject();
       const createResponse = await axiosAPIClient.post(endpoint, imageBody);
-      const imageId = createResponse.data.id;
-      const newImageBody = { name: 'my-new-name' };
-      const url = endpoint.concat('/', imageId);
+      const { id } = createResponse.data;
+      const updates = { name: 'my-new-name' };
+      const url = endpoint.concat('/', id);
 
-      const response = await axiosAPIClient.patch(url, newImageBody);
+      const response = await axiosAPIClient.patch(url, updates);
+      const { status, data } = await axiosAPIClient.get(url);
 
-      expect(response.status).toBe(204);
+      expect({ status: response.status, data: response.status }).toStrictEqual({
+        status: 204,
+        data: 204,
+      });
+      expect({ status, data }).toStrictEqual({
+        status: 200,
+        data: {
+          ...imageBody,
+          id,
+          name: 'my-new-name',
+          state: { actions: [] },
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+        },
+      });
     });
 
     it('When providing an invalid image id, get back 400 response', async () => {
@@ -116,9 +179,15 @@ describe('Images API', () => {
       const imageBody = fakeImageObject();
       const url = endpoint.concat('/', invalidImageId);
 
-      const response = await axiosAPIClient.patch(url, imageBody);
+      const { status, data } = await axiosAPIClient.patch(url, imageBody);
 
-      expect(response.status).toBe(400);
+      expect({ status, data }).toStrictEqual(
+        responses.badRequestWithValidation({
+          keys: ['id'],
+          message: '"id" contains an invalid value',
+          source: 'params',
+        }),
+      );
     });
   });
 
@@ -126,20 +195,34 @@ describe('Images API', () => {
     it('When deleting an image with valid id, get back 204 response', async () => {
       const imageBody = fakeImageObject();
       const createResponse = await axiosAPIClient.post(endpoint, imageBody);
-      const url = endpoint.concat('/', createResponse.data.id);
+      const { id } = createResponse.data;
+      const url = endpoint.concat('/', id);
 
       const response = await axiosAPIClient.delete(url);
+      const { status, data } = await axiosAPIClient.get(url);
 
-      expect(response.status).toBe(204);
+      expect({ status: response.status, data: response.data }).toStrictEqual({
+        status: 204,
+        data: '',
+      });
+      expect({ status, data }).toStrictEqual(
+        responses.notFound(`Image with id = "${id}" not found`),
+      );
     });
 
     it('When providing an invalid image id, get back 400 response', async () => {
       const invalidImageId = 'null';
       const url = endpoint.concat('/', invalidImageId);
 
-      const response = await axiosAPIClient.delete(url);
+      const { status, data } = await axiosAPIClient.delete(url);
 
-      expect(response.status).toBe(400);
+      expect({ status, data }).toStrictEqual(
+        responses.badRequestWithValidation({
+          keys: ['id'],
+          message: `"id" contains an invalid value`,
+          source: 'params',
+        }),
+      );
     });
   });
 });
