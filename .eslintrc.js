@@ -7,5 +7,6 @@ module.exports = {
   rules: {
     'global-require': 0,
     'no-underscore-dangle': 0,
+    'no-return-await': 0,
   },
 };
