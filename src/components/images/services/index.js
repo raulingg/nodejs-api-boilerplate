@@ -1,6 +1,5 @@
-const { Image } = require('../models');
-const ImageServiceFactory = require('./ImageServiceFactory');
+const ImageServiceFactory = require('./ImageService');
 
 module.exports = {
-  ImageService: ImageServiceFactory(Image),
+  ImageService: ImageServiceFactory(),
 };

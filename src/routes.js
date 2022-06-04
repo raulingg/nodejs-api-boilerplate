@@ -3,5 +3,5 @@ module.exports = (app) => {
     res.status(200).json({ message: 'Hello world - Images API' });
   });
 
-  app.use('/images', require('./components/images/routes'));
+  app.use('/images', require('./components/images/handlers'));
 };

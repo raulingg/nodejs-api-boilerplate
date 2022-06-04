@@ -1,7 +1,7 @@
 const { celebrate, Joi, Segments } = require('celebrate');
-const { objectId } = require('../../../../utils/requestValidators');
+const { requestValidators } = require('../../../../utils');
 
-module.exports.createImageMiddleware = celebrate({
+module.exports.create = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().trim().required(),
     key: Joi.string().trim().required(),
@@ -19,7 +19,7 @@ module.exports.createImageMiddleware = celebrate({
   }),
 });
 
-module.exports.updateImageMiddleware = celebrate({
+module.exports.update = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().trim(),
     key: Joi.string().trim(),
@@ -36,12 +36,12 @@ module.exports.updateImageMiddleware = celebrate({
     }),
   }),
   [Segments.PARAMS]: {
-    id: Joi.string().custom(objectId),
+    id: Joi.string().custom(requestValidators.objectId),
   },
 });
 
-module.exports.deleteImageMiddleware = celebrate({
+module.exports.validParamId = celebrate({
   [Segments.PARAMS]: {
-    id: Joi.string().custom(objectId),
+    id: Joi.string().custom(requestValidators.objectId),
   },
 });

@@ -1,15 +1,11 @@
 class AppError extends Error {
-  constructor({
-    statusCode = 500,
-    description = 'internal server error',
-    isOperational = true,
-  } = {}) {
-    super(description);
+  constructor({ message = 'Internal server error', statusCode = 500, operational = true } = {}) {
+    super(message);
     Object.setPrototypeOf(this, new.target.prototype);
     this.statusCode = statusCode;
-    this.isOperational = isOperational;
+    this.operational = operational;
     Error.captureStackTrace(this);
   }
 }
 
-module.exports.AppError = AppError;
+module.exports = AppError;
