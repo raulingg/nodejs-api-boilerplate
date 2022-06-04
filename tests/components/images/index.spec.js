@@ -81,6 +81,8 @@ describe('Images API', () => {
       expect(response.status).toBe(201);
       expect(response.data).toStrictEqual({
         id: expect.any(String),
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
         state: { actions: [] },
         ...imageBody,
       });

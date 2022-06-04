@@ -33,7 +33,7 @@ const ImageSchema = new Schema(
       deletedAt: Date,
     },
   },
-  { versionKey: false },
+  { versionKey: false, timestamps: true },
 );
 
 if (!ImageSchema.options.toObject) {
