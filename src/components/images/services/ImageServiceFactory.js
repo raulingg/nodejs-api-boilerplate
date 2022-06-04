@@ -1,3 +1,10 @@
+/**
+ * @typedef {import("../models/Image")} Image
+ */
+
+/**
+ * @param {Image} ImageModel
+ */
 const ImageServiceFactory = (ImageModel) => {
   const create = async (newImage) => {
     const imageInstance = await ImageModel.create(newImage);
@@ -5,8 +12,7 @@ const ImageServiceFactory = (ImageModel) => {
   };
 
   const updateById = async (_id, updates) => {
-    const imageInstance = await ImageModel.updateOne({ _id }, updates);
-    return imageInstance.toObject();
+    return await ImageModel.updateOne({ _id }, updates);
   };
 
   const deleteById = (_id) => ImageModel.deleteOne({ _id });
