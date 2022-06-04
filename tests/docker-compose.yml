@@ -1,0 +1,8 @@
+version: '3.9'
+
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongo-testing
+    ports:
+      - 27018:27017
