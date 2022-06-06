@@ -35,11 +35,10 @@ const initWebServer = () => {
 const stopWebServerIfReachable = async () => {
   const { port } = serverConnection.address();
   const isWebServerReachable = await isPortReachable(port);
+
   if (isWebServerReachable) {
     return new Promise((resolve) => {
-      serverConnection.close(() => {
-        resolve();
-      });
+      serverConnection.close(resolve);
     });
   }
 
@@ -111,6 +110,18 @@ describe('Images API', () => {
         }),
       );
     });
+
+    it('When providing a non-existing image id, get back 404 response', async () => {
+      const id = mongoose.Types.ObjectId();
+      const imageBody = fakeImageObject();
+      const url = endpoint.concat('/', id);
+
+      const { status, data } = await axiosAPIClient.get(url, imageBody);
+
+      expect({ status, data }).toStrictEqual(
+        responses.notFound(`Image with id = "${id}" not found`),
+      );
+    });
   });
 
   describe(`POST ${endpoint}`, () => {
@@ -157,9 +168,9 @@ describe('Images API', () => {
       const response = await axiosAPIClient.patch(url, updates);
       const { status, data } = await axiosAPIClient.get(url);
 
-      expect({ status: response.status, data: response.status }).toStrictEqual({
+      expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 204,
-        data: 204,
+        data: '',
       });
       expect({ status, data }).toStrictEqual({
         status: 200,

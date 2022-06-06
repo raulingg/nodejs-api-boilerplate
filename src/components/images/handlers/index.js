@@ -25,7 +25,7 @@ router.post('/', middlewares.create, async (req, res, next) => {
 router.patch('/:id', middlewares.update, async (req, res, next) => {
   try {
     await ImageService.updateById(req.params.id, req.body);
-    res.status(204).json();
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
@@ -34,7 +34,7 @@ router.patch('/:id', middlewares.update, async (req, res, next) => {
 router.delete('/:id', middlewares.validParamId, async (req, res, next) => {
   try {
     await ImageService.deleteById(req.params.id);
-    res.status(204).json();
+    res.status(204).send();
   } catch (err) {
     next(err);
   }
