@@ -1,8 +1,5 @@
-const { default: axios } = require('axios');
-const isPortReachable = require('is-port-reachable');
 const { default: mongoose } = require('mongoose');
-const app = require('../../../src/app');
-const responses = require('../../utils/responses');
+const { APIClient, APIResponses, APIServer } = require('../../utils/api');
 
 const defaultImageProps = {
   name: 'my-image',
@@ -18,54 +15,26 @@ const fakeImageObject = (props) => ({
   ...props,
 });
 
+const apiServer = APIServer();
 // Configuring file-level HTTP client with base URL will allow
 // all the tests to approach with a shortened syntax
-let axiosAPIClient;
-let serverConnection;
-
-const initWebServer = () => {
-  return new Promise((resolve) => {
-    // ️️️✅ Best Practice 8.13: Specify no port for testing, only in production
-    serverConnection = app.listen(null, () => {
-      resolve(serverConnection.address());
-    });
-  });
-};
-
-const stopWebServerIfReachable = async () => {
-  const { port } = serverConnection.address();
-  const isWebServerReachable = await isPortReachable(port);
-
-  if (isWebServerReachable) {
-    return new Promise((resolve) => {
-      serverConnection.close(resolve);
-    });
-  }
-
-  return Promise.resolve();
-};
+let apiClient;
 
 beforeAll(async () => {
   await mongoose.connect(`mongodb://localhost:27018/images-test`);
 
   // ️️️✅ Best Practice: Place the backend under test within the same process
-  const { port } = await initWebServer();
-  const isWebServerReachable = await isPortReachable(port);
+  // ️️️✅ Best Practice 8.13: Specify no port for testing, only in production
+  const { port } = await apiServer.init(null);
 
-  if (!isWebServerReachable) {
-    throw new Error(`Webserver is unreachable at port ${port}`);
-  }
+  await apiServer.throwIfUnreachable();
 
-  const axiosConfig = {
-    baseURL: `http://localhost:${port}`,
-    validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable
-  };
-  axiosAPIClient = axios.create(axiosConfig);
+  apiClient = APIClient({ baseURL: `http://localhost:${port}` });
 });
 
 afterAll(async () => {
   mongoose.connection.close();
-  await stopWebServerIfReachable();
+  await apiServer.stop();
 });
 
 describe('Images API', () => {
@@ -75,12 +44,12 @@ describe('Images API', () => {
     it('When fetching an image by id, Then should get back one document', async () => {
       // Arrange
       const imageBody = fakeImageObject();
-      const createResponse = await axiosAPIClient.post(endpoint, imageBody);
+      const createResponse = await apiClient.post(endpoint, imageBody);
       const { id } = createResponse.data;
       const url = endpoint.concat('/', id);
 
       // Act
-      const { data, status } = await axiosAPIClient.get(url);
+      const { data, status } = await apiClient.get(url);
       // Assert
 
       expect({ data, status }).toStrictEqual({
@@ -100,10 +69,10 @@ describe('Images API', () => {
       const imageBody = fakeImageObject();
       const url = endpoint.concat('/', invalidImageId);
 
-      const { status, data } = await axiosAPIClient.patch(url, imageBody);
+      const { status, data } = await apiClient.patch(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
-        responses.badRequestWithValidation({
+        APIResponses.badRequestWithValidation({
           keys: ['id'],
           message: '"id" contains an invalid value',
           source: 'params',
@@ -116,10 +85,10 @@ describe('Images API', () => {
       const imageBody = fakeImageObject();
       const url = endpoint.concat('/', id);
 
-      const { status, data } = await axiosAPIClient.get(url, imageBody);
+      const { status, data } = await apiClient.get(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
-        responses.notFound(`Image with id = "${id}" not found`),
+        APIResponses.notFound(`Image with id = "${id}" not found`),
       );
     });
   });
@@ -128,29 +97,42 @@ describe('Images API', () => {
     it('When adding a new valid image, Then should get back a 201 response', async () => {
       const imageBody = fakeImageObject();
 
-      const { data, status } = await axiosAPIClient.post(endpoint, imageBody);
+      const { data, status } = await apiClient.post(endpoint, imageBody);
 
-      expect({ status, data }).toStrictEqual({
-        status: 201,
-        data: {
+      expect({ status, data }).toStrictEqual(
+        APIResponses.okCreated({
           ...imageBody,
           id: expect.any(String),
           state: { actions: [] },
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-        },
-      });
+        }),
+      );
     });
 
     it('When adding an image without specifying name, get back 400 response', async () => {
       const { name, ...imageBody } = fakeImageObject();
 
-      const { status, data } = await axiosAPIClient.post(endpoint, imageBody);
+      const { status, data } = await apiClient.post(endpoint, imageBody);
 
       expect({ status, data }).toStrictEqual(
-        responses.badRequestWithValidation({
+        APIResponses.badRequestWithValidation({
           message: '"name" is required',
           keys: ['name'],
+          source: 'body',
+        }),
+      );
+    });
+
+    it('When providing non-schema keys, get back 400 response', async () => {
+      const imageBody = { ...fakeImageObject(), extra: 'non-schema key' };
+
+      const { status, data } = await apiClient.post(endpoint, imageBody);
+
+      expect({ status, data }).toStrictEqual(
+        APIResponses.badRequestWithValidation({
+          keys: ['extra'],
+          message: '"extra" is not allowed',
           source: 'body',
         }),
       );
@@ -160,29 +142,28 @@ describe('Images API', () => {
   describe(`PATCH ${endpoint}/:id`, () => {
     it('When updating an image with valid data, get back 204 response', async () => {
       const imageBody = fakeImageObject();
-      const createResponse = await axiosAPIClient.post(endpoint, imageBody);
+      const createResponse = await apiClient.post(endpoint, imageBody);
       const { id } = createResponse.data;
       const updates = { name: 'my-new-name' };
       const url = endpoint.concat('/', id);
 
-      const response = await axiosAPIClient.patch(url, updates);
-      const { status, data } = await axiosAPIClient.get(url);
+      const response = await apiClient.patch(url, updates);
+      const { status, data } = await apiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 204,
         data: '',
       });
-      expect({ status, data }).toStrictEqual({
-        status: 200,
-        data: {
+      expect({ status, data }).toStrictEqual(
+        APIResponses.ok({
           ...imageBody,
           id,
           name: 'my-new-name',
           state: { actions: [] },
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-        },
-      });
+        }),
+      );
     });
 
     it('When providing an invalid image id, get back 400 response', async () => {
@@ -190,13 +171,30 @@ describe('Images API', () => {
       const imageBody = fakeImageObject();
       const url = endpoint.concat('/', invalidImageId);
 
-      const { status, data } = await axiosAPIClient.patch(url, imageBody);
+      const { status, data } = await apiClient.patch(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
-        responses.badRequestWithValidation({
+        APIResponses.badRequestWithValidation({
           keys: ['id'],
           message: '"id" contains an invalid value',
           source: 'params',
+        }),
+      );
+    });
+
+    it('When providing non-schema keys, get back 400 response', async () => {
+      const id = mongoose.Types.ObjectId();
+      const imageBody = fakeImageObject();
+      const updates = { ...imageBody, extra: 'non-schema key' };
+      const url = endpoint.concat('/', id);
+
+      const { status, data } = await apiClient.patch(url, updates);
+
+      expect({ status, data }).toStrictEqual(
+        APIResponses.badRequestWithValidation({
+          keys: ['extra'],
+          message: '"extra" is not allowed',
+          source: 'body',
         }),
       );
     });
@@ -205,19 +203,19 @@ describe('Images API', () => {
   describe(`DELETE ${endpoint}/:id`, () => {
     it('When deleting an image with valid id, get back 204 response', async () => {
       const imageBody = fakeImageObject();
-      const createResponse = await axiosAPIClient.post(endpoint, imageBody);
+      const createResponse = await apiClient.post(endpoint, imageBody);
       const { id } = createResponse.data;
       const url = endpoint.concat('/', id);
 
-      const response = await axiosAPIClient.delete(url);
-      const { status, data } = await axiosAPIClient.get(url);
+      const response = await apiClient.delete(url);
+      const { status, data } = await apiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 204,
         data: '',
       });
       expect({ status, data }).toStrictEqual(
-        responses.notFound(`Image with id = "${id}" not found`),
+        APIResponses.notFound(`Image with id = "${id}" not found`),
       );
     });
 
@@ -225,10 +223,10 @@ describe('Images API', () => {
       const invalidImageId = 'null';
       const url = endpoint.concat('/', invalidImageId);
 
-      const { status, data } = await axiosAPIClient.delete(url);
+      const { status, data } = await apiClient.delete(url);
 
       expect({ status, data }).toStrictEqual(
-        responses.badRequestWithValidation({
+        APIResponses.badRequestWithValidation({
           keys: ['id'],
           message: `"id" contains an invalid value`,
           source: 'params',

@@ -1,6 +1,11 @@
 const HTTP = require('http');
 
-const makeResponse = (statusCode) => (message) => ({
+const makeResponse = (statusCode) => (data) => ({
+  status: statusCode,
+  data,
+});
+
+const makeErrorResponse = (statusCode) => (message) => ({
   status: statusCode,
   data: {
     error: HTTP.STATUS_CODES[statusCode],
@@ -22,6 +27,10 @@ const withValidation =
     };
   };
 
-module.exports.notFound = makeResponse(404);
-module.exports.badRequest = makeResponse(400);
+module.exports.ok = makeResponse(200);
+module.exports.okCreated = makeResponse(201);
+module.exports.okNotContent = exports.ok('');
+
+module.exports.notFound = makeErrorResponse(404);
+module.exports.badRequest = makeErrorResponse(400);
 module.exports.badRequestWithValidation = withValidation(exports.badRequest);
