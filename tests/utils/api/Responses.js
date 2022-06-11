@@ -34,3 +34,4 @@ module.exports.okNotContent = makeResponse(204);
 module.exports.notFound = makeErrorResponse(404);
 module.exports.badRequest = makeErrorResponse(400);
 module.exports.badRequestWithValidation = withValidation(exports.badRequest);
+module.exports.internalError = makeErrorResponse(500);
