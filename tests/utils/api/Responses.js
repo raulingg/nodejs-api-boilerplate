@@ -29,7 +29,7 @@ const withValidation =
 
 module.exports.ok = makeResponse(200);
 module.exports.okCreated = makeResponse(201);
-module.exports.okNotContent = exports.ok('');
+module.exports.okNotContent = makeResponse(204);
 
 module.exports.notFound = makeErrorResponse(404);
 module.exports.badRequest = makeErrorResponse(400);

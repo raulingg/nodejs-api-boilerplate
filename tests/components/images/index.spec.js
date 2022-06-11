@@ -38,12 +38,44 @@ afterAll(async () => {
   await apiServer.stop();
 });
 
+function withInvalidId(method) {
+  it('When providing an invalid image id, get back 400 response', async () => {
+    const invalidImageId = 'null';
+    const body = fakeImageObject();
+    const url = '/'.concat(invalidImageId);
+
+    const { status, data } = await imageApiClient[method](url, body);
+
+    expect({ status, data }).toStrictEqual(
+      APIResponses.badRequestWithValidation({
+        keys: ['id'],
+        message: '"id" contains an invalid value',
+        source: 'params',
+      }),
+    );
+  });
+}
+
+function withNonExistingId(method) {
+  it('When providing a non-existing image id, get back 404 response', async () => {
+    const id = mongoose.Types.ObjectId();
+    const body = fakeImageObject();
+    const url = '/'.concat(id);
+
+    const { status, data } = await imageApiClient[method](url, body);
+
+    expect({ status, data }).toStrictEqual(
+      APIResponses.notFound(`Image with id = "${id}" not found`),
+    );
+  });
+}
+
 describe('Images API', () => {
   describe(`GET ${endpoint.concat('/:id')}`, () => {
     it('When fetching an image by id, Then should get back one document', async () => {
       // Arrange
-      const imageBody = fakeImageObject();
-      const createResponse = await imageApiClient.post('/', imageBody);
+      const body = fakeImageObject();
+      const createResponse = await imageApiClient.post('/', body);
       const { id } = createResponse.data;
       const url = '/'.concat(id);
 
@@ -54,7 +86,7 @@ describe('Images API', () => {
       expect({ data, status }).toStrictEqual({
         status: 200,
         data: {
-          ...imageBody,
+          ...body,
           id,
           state: { actions: [] },
           createdAt: expect.any(String),
@@ -63,44 +95,20 @@ describe('Images API', () => {
       });
     });
 
-    it('When providing an invalid image id, get back 400 response', async () => {
-      const invalidImageId = 'null';
-      const imageBody = fakeImageObject();
-      const url = '/'.concat(invalidImageId);
+    withInvalidId('get');
 
-      const { status, data } = await imageApiClient.patch(url, imageBody);
-
-      expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
-          keys: ['id'],
-          message: '"id" contains an invalid value',
-          source: 'params',
-        }),
-      );
-    });
-
-    it('When providing a non-existing image id, get back 404 response', async () => {
-      const id = mongoose.Types.ObjectId();
-      const imageBody = fakeImageObject();
-      const url = '/'.concat(id);
-
-      const { status, data } = await imageApiClient.get(url, imageBody);
-
-      expect({ status, data }).toStrictEqual(
-        APIResponses.notFound(`Image with id = "${id}" not found`),
-      );
-    });
+    withNonExistingId('get');
   });
 
   describe(`POST ${endpoint}`, () => {
     it('When adding a new valid image, Then should get back a 201 response', async () => {
-      const imageBody = fakeImageObject();
+      const body = fakeImageObject();
 
-      const { data, status } = await imageApiClient.post('/', imageBody);
+      const { data, status } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.okCreated({
-          ...imageBody,
+          ...body,
           id: expect.any(String),
           state: { actions: [] },
           createdAt: expect.any(String),
@@ -110,9 +118,9 @@ describe('Images API', () => {
     });
 
     it('When adding an image without specifying name, get back 400 response', async () => {
-      const { name, ...imageBody } = fakeImageObject();
+      const { name, ...body } = fakeImageObject();
 
-      const { status, data } = await imageApiClient.post('/', imageBody);
+      const { status, data } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -124,9 +132,9 @@ describe('Images API', () => {
     });
 
     it('When providing non-schema keys, get back 400 response', async () => {
-      const imageBody = { ...fakeImageObject(), extra: 'non-schema key' };
+      const body = { ...fakeImageObject(), extra: 'non-schema key' };
 
-      const { status, data } = await imageApiClient.post('/', imageBody);
+      const { status, data } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -140,8 +148,8 @@ describe('Images API', () => {
 
   describe(`PATCH ${endpoint}/:id`, () => {
     it('When updating an image with valid data, get back 204 response', async () => {
-      const imageBody = fakeImageObject();
-      const createResponse = await imageApiClient.post('/', imageBody);
+      const body = fakeImageObject();
+      const createResponse = await imageApiClient.post('/', body);
       const { id } = createResponse.data;
       const updates = { name: 'my-new-name' };
       const url = '/'.concat(id);
@@ -149,13 +157,12 @@ describe('Images API', () => {
       const response = await imageApiClient.patch(url, updates);
       const { status, data } = await imageApiClient.get(url);
 
-      expect({ status: response.status, data: response.data }).toStrictEqual({
-        status: 204,
-        data: '',
-      });
+      expect({ status: response.status, data: response.data }).toStrictEqual(
+        APIResponses.okNotContent(''),
+      );
       expect({ status, data }).toStrictEqual(
         APIResponses.ok({
-          ...imageBody,
+          ...body,
           id,
           name: 'my-new-name',
           state: { actions: [] },
@@ -165,26 +172,10 @@ describe('Images API', () => {
       );
     });
 
-    it('When providing an invalid image id, get back 400 response', async () => {
-      const invalidImageId = 'null';
-      const imageBody = fakeImageObject();
-      const url = '/'.concat(invalidImageId);
-
-      const { status, data } = await imageApiClient.patch(url, imageBody);
-
-      expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
-          keys: ['id'],
-          message: '"id" contains an invalid value',
-          source: 'params',
-        }),
-      );
-    });
-
     it('When providing non-schema keys, get back 400 response', async () => {
       const id = mongoose.Types.ObjectId();
-      const imageBody = fakeImageObject();
-      const updates = { ...imageBody, extra: 'non-schema key' };
+      const body = fakeImageObject();
+      const updates = { ...body, extra: 'non-schema key' };
       const url = '/'.concat(id);
 
       const { status, data } = await imageApiClient.patch(url, updates);
@@ -197,40 +188,32 @@ describe('Images API', () => {
         }),
       );
     });
+
+    withInvalidId('patch');
+
+    withNonExistingId('patch');
   });
 
   describe(`DELETE ${endpoint}/:id`, () => {
     it('When deleting an image with valid id, get back 204 response', async () => {
-      const imageBody = fakeImageObject();
-      const createResponse = await imageApiClient.post('/', imageBody);
+      const body = fakeImageObject();
+      const createResponse = await imageApiClient.post('/', body);
       const { id } = createResponse.data;
       const url = '/'.concat(id);
 
       const response = await imageApiClient.delete(url);
       const { status, data } = await imageApiClient.get(url);
 
-      expect({ status: response.status, data: response.data }).toStrictEqual({
-        status: 204,
-        data: '',
-      });
+      expect({ status: response.status, data: response.data }).toStrictEqual(
+        APIResponses.okNotContent(''),
+      );
       expect({ status, data }).toStrictEqual(
         APIResponses.notFound(`Image with id = "${id}" not found`),
       );
     });
 
-    it('When providing an invalid image id, get back 400 response', async () => {
-      const invalidImageId = 'null';
-      const url = '/'.concat(invalidImageId);
+    withInvalidId('delete');
 
-      const { status, data } = await imageApiClient.delete(url);
-
-      expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
-          keys: ['id'],
-          message: `"id" contains an invalid value`,
-          source: 'params',
-        }),
-      );
-    });
+    withNonExistingId('delete');
   });
 });
