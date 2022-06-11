@@ -112,8 +112,4 @@ temp/
 *.sqlite
 *.sqlite3
 
-# Cypress artifacts
-cypress/videos
-cypress/downloads
-cypress/screenshots
 # End of https://www.gitignore.io/api/node
