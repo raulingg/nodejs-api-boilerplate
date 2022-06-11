@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "dotenv -e .env.dev nodemon bin/www | npx pino-pretty -t SYS:standard",
-    "test": "jest ."
+    "test": "jest .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "author": "Raul Quispe <relaxedchild@gmail.com>",
   "license": "ISC",
