@@ -16,8 +16,6 @@ const fakeImageObject = (props) => ({
 });
 
 const apiServer = APIServer();
-// Configuring file-level HTTP client with base URL will allow
-// all the tests to approach with a shortened syntax
 let apiClient;
 
 beforeAll(async () => {
@@ -29,6 +27,8 @@ beforeAll(async () => {
 
   await apiServer.throwIfUnreachable();
 
+  // Configuring file-level HTTP client with base URL will allow
+  // all the tests to approach with a shortened syntax
   apiClient = APIClient({ baseURL: `http://localhost:${port}` });
 });
 

@@ -5,6 +5,7 @@ const expressPinoLogger = require('express-pino-logger');
 const { errors } = require('celebrate');
 const logger = require('./logger');
 const { globalErrorMiddleware } = require('./errorHandler');
+const { AppError } = require('./utils');
 
 const app = express();
 
@@ -28,9 +29,8 @@ require('./routes')(app);
 /**
  * 404 handler.
  */
-app.use((req, res) => {
-  res.statusCode = 404;
-  res.send('Not Found!');
+app.use((req, res, next) => {
+  next(new AppError({ message: `path ${req.path} undefined`, statusCode: 404 }));
 });
 
 /**
