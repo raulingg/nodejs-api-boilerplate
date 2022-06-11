@@ -16,7 +16,8 @@ const fakeImageObject = (props) => ({
 });
 
 const apiServer = APIServer();
-let apiClient;
+const endpoint = '/images';
+let imageApiClient;
 
 beforeAll(async () => {
   await mongoose.connect(`mongodb://localhost:27018/images-test`);
@@ -29,7 +30,7 @@ beforeAll(async () => {
 
   // Configuring file-level HTTP client with base URL will allow
   // all the tests to approach with a shortened syntax
-  apiClient = APIClient({ baseURL: `http://localhost:${port}` });
+  imageApiClient = APIClient({ baseURL: `http://localhost:${port}${endpoint}` });
 });
 
 afterAll(async () => {
@@ -38,20 +39,18 @@ afterAll(async () => {
 });
 
 describe('Images API', () => {
-  const endpoint = '/images';
-
   describe(`GET ${endpoint.concat('/:id')}`, () => {
     it('When fetching an image by id, Then should get back one document', async () => {
       // Arrange
       const imageBody = fakeImageObject();
-      const createResponse = await apiClient.post(endpoint, imageBody);
+      const createResponse = await imageApiClient.post('/', imageBody);
       const { id } = createResponse.data;
-      const url = endpoint.concat('/', id);
+      const url = '/'.concat(id);
 
       // Act
-      const { data, status } = await apiClient.get(url);
-      // Assert
+      const { data, status } = await imageApiClient.get(url);
 
+      // Assert
       expect({ data, status }).toStrictEqual({
         status: 200,
         data: {
@@ -67,9 +66,9 @@ describe('Images API', () => {
     it('When providing an invalid image id, get back 400 response', async () => {
       const invalidImageId = 'null';
       const imageBody = fakeImageObject();
-      const url = endpoint.concat('/', invalidImageId);
+      const url = '/'.concat(invalidImageId);
 
-      const { status, data } = await apiClient.patch(url, imageBody);
+      const { status, data } = await imageApiClient.patch(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -83,9 +82,9 @@ describe('Images API', () => {
     it('When providing a non-existing image id, get back 404 response', async () => {
       const id = mongoose.Types.ObjectId();
       const imageBody = fakeImageObject();
-      const url = endpoint.concat('/', id);
+      const url = '/'.concat(id);
 
-      const { status, data } = await apiClient.get(url, imageBody);
+      const { status, data } = await imageApiClient.get(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.notFound(`Image with id = "${id}" not found`),
@@ -97,7 +96,7 @@ describe('Images API', () => {
     it('When adding a new valid image, Then should get back a 201 response', async () => {
       const imageBody = fakeImageObject();
 
-      const { data, status } = await apiClient.post(endpoint, imageBody);
+      const { data, status } = await imageApiClient.post('/', imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.okCreated({
@@ -113,7 +112,7 @@ describe('Images API', () => {
     it('When adding an image without specifying name, get back 400 response', async () => {
       const { name, ...imageBody } = fakeImageObject();
 
-      const { status, data } = await apiClient.post(endpoint, imageBody);
+      const { status, data } = await imageApiClient.post('/', imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -127,7 +126,7 @@ describe('Images API', () => {
     it('When providing non-schema keys, get back 400 response', async () => {
       const imageBody = { ...fakeImageObject(), extra: 'non-schema key' };
 
-      const { status, data } = await apiClient.post(endpoint, imageBody);
+      const { status, data } = await imageApiClient.post('/', imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -142,13 +141,13 @@ describe('Images API', () => {
   describe(`PATCH ${endpoint}/:id`, () => {
     it('When updating an image with valid data, get back 204 response', async () => {
       const imageBody = fakeImageObject();
-      const createResponse = await apiClient.post(endpoint, imageBody);
+      const createResponse = await imageApiClient.post('/', imageBody);
       const { id } = createResponse.data;
       const updates = { name: 'my-new-name' };
-      const url = endpoint.concat('/', id);
+      const url = '/'.concat(id);
 
-      const response = await apiClient.patch(url, updates);
-      const { status, data } = await apiClient.get(url);
+      const response = await imageApiClient.patch(url, updates);
+      const { status, data } = await imageApiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 204,
@@ -169,9 +168,9 @@ describe('Images API', () => {
     it('When providing an invalid image id, get back 400 response', async () => {
       const invalidImageId = 'null';
       const imageBody = fakeImageObject();
-      const url = endpoint.concat('/', invalidImageId);
+      const url = '/'.concat(invalidImageId);
 
-      const { status, data } = await apiClient.patch(url, imageBody);
+      const { status, data } = await imageApiClient.patch(url, imageBody);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -186,9 +185,9 @@ describe('Images API', () => {
       const id = mongoose.Types.ObjectId();
       const imageBody = fakeImageObject();
       const updates = { ...imageBody, extra: 'non-schema key' };
-      const url = endpoint.concat('/', id);
+      const url = '/'.concat(id);
 
-      const { status, data } = await apiClient.patch(url, updates);
+      const { status, data } = await imageApiClient.patch(url, updates);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
@@ -203,12 +202,12 @@ describe('Images API', () => {
   describe(`DELETE ${endpoint}/:id`, () => {
     it('When deleting an image with valid id, get back 204 response', async () => {
       const imageBody = fakeImageObject();
-      const createResponse = await apiClient.post(endpoint, imageBody);
+      const createResponse = await imageApiClient.post('/', imageBody);
       const { id } = createResponse.data;
-      const url = endpoint.concat('/', id);
+      const url = '/'.concat(id);
 
-      const response = await apiClient.delete(url);
-      const { status, data } = await apiClient.get(url);
+      const response = await imageApiClient.delete(url);
+      const { status, data } = await imageApiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual({
         status: 204,
@@ -221,9 +220,9 @@ describe('Images API', () => {
 
     it('When providing an invalid image id, get back 400 response', async () => {
       const invalidImageId = 'null';
-      const url = endpoint.concat('/', invalidImageId);
+      const url = '/'.concat(invalidImageId);
 
-      const { status, data } = await apiClient.delete(url);
+      const { status, data } = await imageApiClient.delete(url);
 
       expect({ status, data }).toStrictEqual(
         APIResponses.badRequestWithValidation({
