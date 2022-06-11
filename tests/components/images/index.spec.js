@@ -30,7 +30,9 @@ beforeAll(async () => {
 
   // Configuring file-level HTTP client with base URL will allow
   // all the tests to approach with a shortened syntax
-  imageApiClient = APIClient({ baseURL: `http://localhost:${port}${endpoint}` });
+  imageApiClient = APIClient({
+    baseURL: `http://localhost:${port}${endpoint}`,
+  });
 });
 
 afterAll(async () => {

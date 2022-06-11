@@ -24,7 +24,9 @@ describe('Welcome /', () => {
 
     const { status, data } = await apiClient.get(endpoint);
 
-    expect({ status, data }).toStrictEqual(APIResponses.ok('Hello world - Images API'));
+    expect({ status, data }).toStrictEqual(
+      APIResponses.ok('Hello world - Images API'),
+    );
   });
 });
 
@@ -34,6 +36,8 @@ describe('404 - Not Found', () => {
 
     const { status, data } = await apiClient.get(endpoint);
 
-    expect({ status, data }).toStrictEqual(APIResponses.notFound(`path /whatever undefined`));
+    expect({ status, data }).toStrictEqual(
+      APIResponses.notFound(`path /whatever undefined`),
+    );
   });
 });

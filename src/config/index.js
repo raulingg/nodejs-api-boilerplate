@@ -11,7 +11,9 @@ module.exports = {
     connectionOptions: {},
   },
   cors: {
-    origin: inDevelopment ? true : (process.env.CORS_ORIGINS || '').split(',') || false,
+    origin: inDevelopment
+      ? true
+      : (process.env.CORS_ORIGINS || '').split(',') || false,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: false,
   },

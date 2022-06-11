@@ -1,5 +1,5 @@
-const { errors } = require("../../../errorHandler");
-const { Image } = require("../models");
+const { errors } = require('../../../errorHandler');
+const { Image } = require('../models');
 
 const ImageNotFoundError = (id) =>
   errors.NotFound(`Image with id = "${id}" not found`);
@@ -7,7 +7,7 @@ const ImageNotFoundError = (id) =>
 const ImageService = () => {
   const getById = async (id) => {
     const imageInstance = await Image.findById(id).orFail(
-      ImageNotFoundError(id)
+      ImageNotFoundError(id),
     );
     return imageInstance.toObject();
   };
@@ -19,15 +19,15 @@ const ImageService = () => {
 
   const updateById = async (id, updates) => {
     const imageInstance = await Image.findByIdAndUpdate(id, updates).orFail(
-      ImageNotFoundError(id)
+      ImageNotFoundError(id),
     );
 
     return imageInstance.toObject();
   };
 
   const deleteById = async (id) => {
-    return await Image.findByIdAndDelete(id, { projection: "_id" }).orFail(
-      ImageNotFoundError(id)
+    return await Image.findByIdAndDelete(id, { projection: '_id' }).orFail(
+      ImageNotFoundError(id),
     );
   };
 

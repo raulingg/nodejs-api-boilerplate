@@ -30,7 +30,9 @@ require('./routes')(app);
  * 404 handler.
  */
 app.use((req, res, next) => {
-  next(new AppError({ message: `path ${req.path} undefined`, statusCode: 404 }));
+  next(
+    new AppError({ message: `path ${req.path} undefined`, statusCode: 404 }),
+  );
 });
 
 /**
