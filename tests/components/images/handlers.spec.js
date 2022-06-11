@@ -36,7 +36,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  mongoose.connection.close();
+  await mongoose.connection.close();
   await apiServer.stop();
 });
 
