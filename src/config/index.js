@@ -18,6 +18,7 @@ module.exports = {
     credentials: false,
   },
   logger: {
-    enabled: process.env.NODE_ENV !== 'test',
+    enabled: process.env.LOG_ENABLED ?? true,
+    dest: process.env.LOG_DEST || './logs/error.log',
   },
 };
