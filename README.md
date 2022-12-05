@@ -1,8 +1,5 @@
 # Products JSON API
 
-[🔗 Link to Demo in Heroku](https://murmuring-mesa-59619.herokuapp.com/)
-
-
 ## Good Practices
 
 This repo somewhat follows the best practices from [nodebestpractices repo](https://github.com/goldbergyoni/nodebestpractices) in Github.
