@@ -21,7 +21,7 @@
     "express": "^4.17.2",
     "express-pino-logger": "^7.0.0",
     "helmet": "^4.6.0",
-    "mongoose": "^6.3.3",
+    "mongoose": "^6.4.6",
     "pino": "^7.6.2"
   },
   "devDependencies": {
