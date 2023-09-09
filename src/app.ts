@@ -1,11 +1,11 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const expressPinoLogger = require('express-pino-logger');
-const { errors } = require('celebrate');
-const logger = require('./logger');
-const { globalErrorMiddleware } = require('./errorHandler');
-const { AppError } = require('./utils');
+import express, { NextFunction, Request, Response } from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import expressPinoLogger from 'express-pino-logger';
+import { errors } from 'celebrate';
+import logger from './logger';
+import { globalErrorMiddleware } from './errorHandler';
+import { AppError } from './utils';
 
 const app = express();
 
@@ -29,7 +29,7 @@ require('./routes')(app);
 /**
  * 404 handler.
  */
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   next(
     new AppError({ message: `path ${req.path} undefined`, statusCode: 404 }),
   );
@@ -45,4 +45,4 @@ app.use(errors());
  */
 app.use(globalErrorMiddleware);
 
-module.exports = app;
+export default app;

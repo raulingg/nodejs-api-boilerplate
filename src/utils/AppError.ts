@@ -1,4 +1,6 @@
-class AppError extends Error {
+export class AppError extends Error {
+  statusCode: number;
+  operational: boolean;
   constructor({
     message = 'Internal server error',
     statusCode = 500,
@@ -11,5 +13,3 @@ class AppError extends Error {
     Error.captureStackTrace(this);
   }
 }
-
-module.exports = AppError;

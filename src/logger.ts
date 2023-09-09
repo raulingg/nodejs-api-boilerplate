@@ -1,5 +1,5 @@
-const pino = require('pino');
-const config = require('./config');
+import pino from 'pino';
+import config from './config';
 
 const customLevels = {
   http: 10,
@@ -25,7 +25,7 @@ const destination = destStrategiesByEnv[config.app.env];
 
 // TODO: Log Routing 🤔
 // link: https://github.com/pinojs/pino/blob/master/docs/api.md#options
-module.exports = pino(
+export default pino(
   {
     enabled: config.logger.enabled,
     customLevels,

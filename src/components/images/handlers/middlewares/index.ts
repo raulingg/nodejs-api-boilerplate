@@ -1,7 +1,7 @@
-const { celebrate, Joi, Segments } = require('celebrate');
-const { requestValidators } = require('../../../../utils');
+import { celebrate, Joi, Segments } from 'celebrate';
+import { requestValidators } from '../../../../utils';
 
-module.exports.create = celebrate({
+export const create = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().trim().required(),
     key: Joi.string().trim().required(),
@@ -19,7 +19,7 @@ module.exports.create = celebrate({
   }),
 });
 
-module.exports.update = celebrate({
+export const update = celebrate({
   [Segments.BODY]: Joi.object().keys({
     name: Joi.string().trim(),
     key: Joi.string().trim(),
@@ -40,7 +40,7 @@ module.exports.update = celebrate({
   },
 });
 
-module.exports.validParamId = celebrate({
+export const validParamId = celebrate({
   [Segments.PARAMS]: {
     id: Joi.string().custom(requestValidators.objectId),
   },

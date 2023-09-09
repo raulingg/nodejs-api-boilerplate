@@ -1,11 +1,8 @@
-const { errors } = require('../../../errorHandler');
-const { Image } = require('../models');
+import { errors } from '../../../errorHandler';
+import { Image } from '../models';
 
-const ImageNotFoundError = (id) =>
-  errors.NotFound(`Image with id = "${id}" not found`);
-
-const ImageService = () => {
-  const getById = async (id) => {
+export const ImageService = () => {
+  const getById = async (id: string) => {
     const imageInstance = await Image.findById(id).orFail(
       ImageNotFoundError(id),
     );
@@ -17,7 +14,7 @@ const ImageService = () => {
     return imageInstance.toObject();
   };
 
-  const updateById = async (id, updates) => {
+  const updateById = async (id: string, updates) => {
     const imageInstance = await Image.findByIdAndUpdate(id, updates).orFail(
       ImageNotFoundError(id),
     );
@@ -25,7 +22,7 @@ const ImageService = () => {
     return imageInstance.toObject();
   };
 
-  const deleteById = async (id) => {
+  const deleteById = async (id: string) => {
     return await Image.findByIdAndDelete(id, { projection: '_id' }).orFail(
       ImageNotFoundError(id),
     );
@@ -34,4 +31,5 @@ const ImageService = () => {
   return { create, updateById, deleteById, getById };
 };
 
-module.exports = ImageService;
+const ImageNotFoundError = (id: string) =>
+  errors.NotFound(`Image with id = "${id}" not found`);

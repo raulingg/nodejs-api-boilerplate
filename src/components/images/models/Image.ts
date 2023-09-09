@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
@@ -47,4 +47,4 @@ ImageSchema.options.toObject.transform = function transform(_, ret) {
   return ret;
 };
 
-module.exports = mongoose.model('Image', ImageSchema);
+export const Image = mongoose.model('Image', ImageSchema);

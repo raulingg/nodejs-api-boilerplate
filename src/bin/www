@@ -1,31 +1,30 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-const http = require('http');
-const mongoose = require('mongoose');
-const { createTerminus } = require('@godaddy/terminus');
-const app = require('../app');
-const config = require('../config');
-const { handleError, isOperationalError } = require('../errorHandler');
-const logger = require('../logger');
+import { createServer } from 'http';
+import { connect, connection } from 'mongoose';
+import { createTerminus } from '@godaddy/terminus';
+import app from '../app';
+import config from '../config';
+import { handleError, isOperationalError } from '../errorHandler';
+import { error } from '../logger';
 
-const { port, host } = config.app;
+const { app: { port, host }, db } = config;
 
 /**
  * ODM initialization.
  */
-mongoose
-  .connect(config.db.connectionString, config.db.connectionOptions)
+connect(db.connectionString, db.connectionOptions)
   .then(() => {
-    const server = http.createServer(app);
+    const server = createServer(app);
     createTerminus(server, { signals: ['SIGTERM', 'SIGINT'] });
 
     server.listen(port);
     console.log(`server running at http://${host}:${port}`);
 
-    mongoose.connection.on('error', console.error);
+    connection.on('error', console.error);
   })
   .catch((err) => {
-    logger.error(err);
+    error(err);
   });
 
 process.on('unhandledRejection', (err) => {
