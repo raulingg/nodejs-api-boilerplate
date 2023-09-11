@@ -1,16 +1,17 @@
-const { default: mongoose } = require('mongoose');
-const { APIClient, APIServer, APIResponses } = require('./utils/api');
+import { default as mongoose } from 'mongoose';
+import { ApiClient, ApiResponses, ApiServer } from './utils/api';
+import type { AxiosInstance } from 'axios';
 
-const apiServer = APIServer();
-let apiClient;
+const apiServer = ApiServer();
+let apiClient: AxiosInstance;
 
 beforeAll(async () => {
   await mongoose.connect(`mongodb://localhost:27018/images-test`);
 
-  const { port } = await apiServer.init(null);
+  const port = await apiServer.init(null);
   await apiServer.throwIfUnreachable();
 
-  apiClient = APIClient({ baseURL: `http://localhost:${port}` });
+  apiClient = ApiClient({ baseURL: `http://localhost:${port}` });
 });
 
 afterAll(async () => {
@@ -25,7 +26,7 @@ describe('Welcome /', () => {
     const { status, data } = await apiClient.get(endpoint);
 
     expect({ status, data }).toStrictEqual(
-      APIResponses.ok('Hello world - Images API'),
+      ApiResponses.ok('Hello world - Images API'),
     );
   });
 });
@@ -37,7 +38,7 @@ describe('404 - Not Found', () => {
     const { status, data } = await apiClient.get(endpoint);
 
     expect({ status, data }).toStrictEqual(
-      APIResponses.notFound(`path /whatever undefined`),
+      ApiResponses.notFound(`path /whatever undefined`),
     );
   });
 });

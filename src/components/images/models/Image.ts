@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import {
+  ImageDocument,
+  ImageModel,
+  ImageSchema,
+} from '../../../interfaces/mongoose.gen';
 
-const { Schema } = mongoose;
-
-const ImageSchema = new Schema(
+const schema: ImageSchema = new Schema(
   {
     name: String,
     key: String,
@@ -33,18 +36,18 @@ const ImageSchema = new Schema(
       deletedAt: Date,
     },
   },
-  { versionKey: false, timestamps: true },
+  {
+    versionKey: false,
+    timestamps: true,
+    toObject: {
+      transform(doc, ret, options) {
+        ret.id = ret._id;
+        delete ret._id;
+
+        return ret;
+      },
+    },
+  },
 );
 
-if (!ImageSchema.options.toObject) {
-  ImageSchema.options.toObject = {};
-}
-
-ImageSchema.options.toObject.transform = function transform(_, ret) {
-  ret.id = ret._id;
-  delete ret._id;
-
-  return ret;
-};
-
-export const Image = mongoose.model('Image', ImageSchema);
+export const Image = mongoose.model<ImageDocument, ImageModel>('Image', schema);

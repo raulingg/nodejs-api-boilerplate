@@ -1,7 +1,8 @@
-const { default: mongoose } = require('mongoose');
-const { APIClient, APIResponses, APIServer } = require('../../utils/api');
-const logger = require('../../../src/logger');
-const { AppError } = require('../../../src/utils');
+import { default as mongoose } from 'mongoose';
+import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
+import logger from '../../../src/logger';
+import { AppError } from '../../../src/utils';
+import { AxiosInstance } from 'axios';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -12,22 +13,24 @@ const defaultImageProps = {
   height: 1000,
 };
 
-const fakeImageObject = (props) => ({
+const fakeImageObject = (props = {}) => ({
   ...defaultImageProps,
   ...props,
 });
+const MongoClientErrorMessage =
+  'Client must be connected before running operations';
 
-const apiServer = APIServer();
+const apiServer = ApiServer();
 const endpoint = '/images';
-let imageApiClient;
+let imageApiClient: AxiosInstance;
 
 beforeAll(async () => {
   await mongoose.connect(`mongodb://localhost:27018/images-test`);
 
-  const { port } = await apiServer.init(null);
+  const port = await apiServer.init(null);
   await apiServer.throwIfUnreachable();
 
-  imageApiClient = APIClient({
+  imageApiClient = ApiClient({
     baseURL: `http://localhost:${port}${endpoint}`,
   });
 });
@@ -42,27 +45,18 @@ afterAll(async () => {
 });
 
 describe('Images API', () => {
-  describe(`Connection closed`, () => {
-    const message = 'MongoClient must be connected to perform this operation';
-
+  describe(`Internal Server Error (500)`, () => {
     beforeAll(async () => {
       await mongoose.connection.close();
     });
 
     it('When fetching an image, Then should get back 500 response', async () => {
-      const id = mongoose.Types.ObjectId();
-      const url = '/'.concat(id);
-      const loggerDouble = jest.spyOn(logger, 'error');
-      const error = new AppError({ message, statusCode: 500 });
+      const id = new mongoose.Types.ObjectId();
+      const url = '/'.concat(id.toString());
       const { data, status } = await imageApiClient.get(url);
 
       expect({ data, status }).toStrictEqual(
-        APIResponses.internalError(message),
-      );
-
-      expect(loggerDouble).toHaveBeenLastCalledWith(
-        error,
-        'Error message from the centralized error-handling component',
+        ApiResponses.internalError(MongoClientErrorMessage),
       );
     });
 
@@ -72,31 +66,30 @@ describe('Images API', () => {
       const { data, status } = await imageApiClient.post('/', body);
 
       expect({ data, status }).toStrictEqual(
-        APIResponses.internalError(message),
+        ApiResponses.internalError(MongoClientErrorMessage),
       );
     });
 
     it('When updating an image, Then should get back 500 response', async () => {
-      const id = mongoose.Types.ObjectId();
-      const url = '/'.concat(id);
+      const id = new mongoose.Types.ObjectId();
+      const url = '/'.concat(id.toString());
       const updates = { name: 'my-new-name' };
 
       const { data, status } = await imageApiClient.patch(url, updates);
 
       expect({ data, status }).toStrictEqual(
-        APIResponses.internalError(message),
+        ApiResponses.internalError(MongoClientErrorMessage),
       );
     });
 
     it('When deleting an image, Then should get back 500 response', async () => {
-      const id = mongoose.Types.ObjectId();
-      const url = '/'.concat(id);
-      const body = fakeImageObject();
+      const id = new mongoose.Types.ObjectId();
+      const url = '/'.concat(id.toString());
 
-      const { data, status } = await imageApiClient.delete(url, body);
+      const { data, status } = await imageApiClient.delete(url);
 
       expect({ data, status }).toStrictEqual(
-        APIResponses.internalError(message),
+        ApiResponses.internalError(MongoClientErrorMessage),
       );
     });
   });
@@ -104,10 +97,12 @@ describe('Images API', () => {
   describe(`Logging`, () => {
     it("When there's an unexpected error, Then should log error", async () => {
       await mongoose.connection.close();
-      const id = mongoose.Types.ObjectId();
-      const url = '/'.concat(id);
-      const message = 'MongoClient must be connected to perform this operation';
-      const error = new AppError({ message, statusCode: 500 });
+      const id = new mongoose.Types.ObjectId();
+      const url = '/'.concat(id.toString());
+      const error = new AppError({
+        message: MongoClientErrorMessage,
+        statusCode: 500,
+      });
       const loggerDouble = jest.spyOn(logger, 'error');
 
       await imageApiClient.get(url);

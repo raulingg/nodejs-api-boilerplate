@@ -1,6 +1,6 @@
-const { default: axios } = require('axios');
+import axios from 'axios';
 
-module.exports = (config = {}) =>
+export default (config = {}) =>
   axios.create({
     ...config,
     validateStatus: () => true, // Don't throw HTTP exceptions. Delegate to the tests to decide which error is acceptable

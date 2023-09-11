@@ -1,5 +1,6 @@
-const { default: mongoose } = require('mongoose');
-const { APIClient, APIResponses, APIServer } = require('../../utils/api');
+import { default as mongoose } from 'mongoose';
+import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
+import type { AxiosInstance, Method } from 'axios';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -10,27 +11,27 @@ const defaultImageProps = {
   height: 1000,
 };
 
-const fakeImageObject = (props) => ({
+const fakeImageObject = (props: Record<string, any> = {}) => ({
   ...defaultImageProps,
   ...props,
 });
 
-const apiServer = APIServer();
+const apiServer = ApiServer();
 const endpoint = '/images';
-let imageApiClient;
+let imageApiClient: AxiosInstance;
 
 beforeAll(async () => {
   await mongoose.connect(`mongodb://localhost:27018/images-test`);
 
   // ️️️✅ Best Practice: Place the backend under test within the same process
   // ️️️✅ Best Practice 8.13: Specify no port for testing, only in production
-  const { port } = await apiServer.init(null);
+  const port = await apiServer.init(null);
 
   await apiServer.throwIfUnreachable();
 
   // Configuring file-level HTTP client with base URL will allow
   // all the tests to approach with a shortened syntax
-  imageApiClient = APIClient({
+  imageApiClient = ApiClient({
     baseURL: `http://localhost:${port}${endpoint}`,
   });
 });
@@ -39,38 +40,6 @@ afterAll(async () => {
   await mongoose.connection.close();
   await apiServer.stop();
 });
-
-function withInvalidId(method) {
-  it('When providing an invalid image id, get back 400 response', async () => {
-    const invalidImageId = 'null';
-    const body = fakeImageObject();
-    const url = '/'.concat(invalidImageId);
-
-    const { status, data } = await imageApiClient[method](url, body);
-
-    expect({ status, data }).toStrictEqual(
-      APIResponses.badRequestWithValidation({
-        keys: ['id'],
-        message: '"id" contains an invalid value',
-        source: 'params',
-      }),
-    );
-  });
-}
-
-function withNonExistingId(method) {
-  it('When providing a non-existing image id, get back 404 response', async () => {
-    const id = mongoose.Types.ObjectId();
-    const body = fakeImageObject();
-    const url = '/'.concat(id);
-
-    const { status, data } = await imageApiClient[method](url, body);
-
-    expect({ status, data }).toStrictEqual(
-      APIResponses.notFound(`Image with id = "${id}" not found`),
-    );
-  });
-}
 
 describe('Images API', () => {
   describe(`GET ${endpoint.concat('/:id')}`, () => {
@@ -109,7 +78,7 @@ describe('Images API', () => {
       const { data, status } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
-        APIResponses.okCreated({
+        ApiResponses.okCreated({
           ...body,
           id: expect.any(String),
           state: { actions: [] },
@@ -125,7 +94,7 @@ describe('Images API', () => {
       const { status, data } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
+        ApiResponses.badRequestWithValidation({
           message: '"name" is required',
           keys: ['name'],
           source: 'body',
@@ -139,7 +108,7 @@ describe('Images API', () => {
       const { status, data } = await imageApiClient.post('/', body);
 
       expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
+        ApiResponses.badRequestWithValidation({
           keys: ['extra'],
           message: '"extra" is not allowed',
           source: 'body',
@@ -160,10 +129,10 @@ describe('Images API', () => {
       const { status, data } = await imageApiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual(
-        APIResponses.okNotContent(''),
+        ApiResponses.okNotContent(''),
       );
       expect({ status, data }).toStrictEqual(
-        APIResponses.ok({
+        ApiResponses.ok({
           ...body,
           id,
           name: 'my-new-name',
@@ -175,15 +144,17 @@ describe('Images API', () => {
     });
 
     it('When providing non-schema keys, get back 400 response', async () => {
-      const id = mongoose.Types.ObjectId();
+      const id = new mongoose.Types.ObjectId();
       const body = fakeImageObject();
       const updates = { ...body, extra: 'non-schema key' };
-      const url = '/'.concat(id);
+      const url = '/'.concat(id.toString());
+
+      await imageApiClient.post('/', body);
 
       const { status, data } = await imageApiClient.patch(url, updates);
 
       expect({ status, data }).toStrictEqual(
-        APIResponses.badRequestWithValidation({
+        ApiResponses.badRequestWithValidation({
           keys: ['extra'],
           message: '"extra" is not allowed',
           source: 'body',
@@ -207,10 +178,10 @@ describe('Images API', () => {
       const { status, data } = await imageApiClient.get(url);
 
       expect({ status: response.status, data: response.data }).toStrictEqual(
-        APIResponses.okNotContent(''),
+        ApiResponses.okNotContent(''),
       );
       expect({ status, data }).toStrictEqual(
-        APIResponses.notFound(`Image with id = "${id}" not found`),
+        ApiResponses.notFound(`Image with id = "${id}" not found`),
       );
     });
 
@@ -219,3 +190,39 @@ describe('Images API', () => {
     withNonExistingId('delete');
   });
 });
+
+function withInvalidId(
+  method: Extract<Method, 'post' | 'put' | 'delete' | 'patch' | 'get'> = 'get',
+) {
+  it('When providing an invalid image id, get back 400 response', async () => {
+    const invalidImageId = 'null';
+    const body = fakeImageObject();
+    const url = '/'.concat(invalidImageId);
+
+    const { status, data } = await imageApiClient[method](url, body);
+
+    expect({ status, data }).toStrictEqual(
+      ApiResponses.badRequestWithValidation({
+        keys: ['id'],
+        message: '"id" contains an invalid value',
+        source: 'params',
+      }),
+    );
+  });
+}
+
+function withNonExistingId(
+  method: Extract<Method, 'post' | 'put' | 'delete' | 'patch' | 'get'> = 'post',
+) {
+  it('When providing a non-existing image id, get back 404 response', async () => {
+    const id = new mongoose.Types.ObjectId();
+    const body = fakeImageObject();
+    const url = '/'.concat(id.toString());
+
+    const { status, data } = await imageApiClient[method](url, body);
+
+    expect({ status, data }).toStrictEqual(
+      ApiResponses.notFound(`Image with id = "${id}" not found`),
+    );
+  });
+}

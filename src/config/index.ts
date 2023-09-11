@@ -2,7 +2,9 @@ const inDevelopment = process.env.NODE_ENV === 'development';
 
 export default {
   app: {
-    env: process.env.NODE_ENV || 'production',
+    env:
+      (process.env.NODE_ENV as 'development' | 'production' | 'test') ||
+      'development',
     host: process.env.HOST || 'localhost',
     port: process.env.PORT || 3000,
   },

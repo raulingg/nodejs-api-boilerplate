@@ -1,19 +1,22 @@
-const isPortReachable = require('is-port-reachable');
-const app = require('../../../src/app');
+import type { Server } from 'http';
+import type { AddressInfo } from 'net';
+import isPortReachable from 'is-port-reachable';
+import app from '../../../src/app';
 
-module.exports = () => {
-  let serverConnection;
+export default () => {
+  let serverConnection: Server;
 
-  const init = (port = null) => {
+  const init = (port = null): PromiseLike<number> => {
     return new Promise((resolve) => {
       serverConnection = app.listen(port, () => {
-        resolve(serverConnection.address());
+        const { port } = serverConnection.address() as AddressInfo;
+        resolve(port);
       });
     });
   };
 
   const stop = async () => {
-    const { port } = serverConnection.address();
+    const { port } = serverConnection.address() as AddressInfo;
     const isWebServerReachable = await isPortReachable(port);
 
     if (isWebServerReachable) {
@@ -26,7 +29,7 @@ module.exports = () => {
   };
 
   const throwIfUnreachable = async () => {
-    const { port } = serverConnection.address();
+    const { port } = serverConnection.address() as AddressInfo;
     const isWebServerReachable = await isPortReachable(port);
 
     if (!isWebServerReachable) {

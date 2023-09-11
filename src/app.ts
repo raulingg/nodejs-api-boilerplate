@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import expressPinoLogger from 'express-pino-logger';
 import { errors } from 'celebrate';
 import logger from './logger';
+import buildRoutes from './routes';
 import { globalErrorMiddleware } from './errorHandler';
 import { AppError } from './utils';
 
@@ -24,7 +25,7 @@ app.use(expressPinoLogger({ logger }));
 /**
  * Route registration.
  */
-require('./routes')(app);
+buildRoutes(app);
 
 /**
  * 404 handler.
