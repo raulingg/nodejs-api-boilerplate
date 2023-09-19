@@ -113,3 +113,6 @@ temp/
 *.sqlite3
 
 # End of https://www.gitignore.io/api/node
+
+# Mac files
+**/.DS_Store
