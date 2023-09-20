@@ -1,3 +1,4 @@
-import { ImageService as ImageServiceFactory } from './ImageService';
+import { Image } from '../models/Image.js';
+import { ImageService } from './ImageService.js';
 
-export const ImageService = ImageServiceFactory();
+export const imageService = ImageService(Image);

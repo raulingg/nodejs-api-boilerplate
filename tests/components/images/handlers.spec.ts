@@ -1,3 +1,4 @@
+import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
 import mongoose from 'mongoose';
 import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
 import type { AxiosInstance, Method } from 'axios';
@@ -26,7 +27,7 @@ beforeAll(async () => {
 
   // ️️️✅ Best Practice: Place the backend under test within the same process
   // ️️️✅ Best Practice 8.13: Specify no port for testing, only in production
-  const port = await apiServer.init(null);
+  const port = await apiServer.init();
 
   await apiServer.throwIfUnreachable();
 
@@ -44,7 +45,7 @@ afterAll(async () => {
 
 describe('Images API', () => {
   describe(`GET ${endpoint.concat('/:id')}`, () => {
-    it('When fetching an image by id, Then should get back one document', async () => {
+    test('When fetching an image by id, Then should get back one document', async () => {
       // Arrange
       const body = fakeImageObject();
       const createResponse = await imageApiClient.post('/', body);
@@ -73,7 +74,7 @@ describe('Images API', () => {
   });
 
   describe(`POST ${endpoint}`, () => {
-    it('When adding a new valid image, Then should get back a 201 response', async () => {
+    test('When adding a new valid image, Then should get back a 201 response', async () => {
       const body = fakeImageObject();
 
       const { data, status } = await imageApiClient.post('/', body);
@@ -89,7 +90,7 @@ describe('Images API', () => {
       );
     });
 
-    it('When adding an image without specifying name, get back 400 response', async () => {
+    test('When adding an image without specifying name, get back 400 response', async () => {
       const { name, ...body } = fakeImageObject();
 
       const { status, data } = await imageApiClient.post('/', body);
@@ -103,7 +104,7 @@ describe('Images API', () => {
       );
     });
 
-    it('When providing non-schema keys, get back 400 response', async () => {
+    test('When providing non-schema keys, get back 400 response', async () => {
       const body = {
         ...fakeImageObject(),
         extra: 'non-schema key',
@@ -122,7 +123,7 @@ describe('Images API', () => {
   });
 
   describe(`PATCH ${endpoint}/:id`, () => {
-    it('When updating an image with valid data, get back 204 response', async () => {
+    test('When updating an image with valid data, get back 204 response', async () => {
       const body = fakeImageObject();
       const createResponse = await imageApiClient.post('/', body);
       const { id } = createResponse.data;
@@ -148,7 +149,7 @@ describe('Images API', () => {
       );
     });
 
-    it('When providing non-schema keys, get back 400 response', async () => {
+    test('When providing non-schema keys, get back 400 response', async () => {
       const id = new mongoose.Types.ObjectId();
       const body = fakeImageObject();
       const updates = { ...body, extra: 'non-schema key' };
@@ -173,7 +174,7 @@ describe('Images API', () => {
   });
 
   describe(`DELETE ${endpoint}/:id`, () => {
-    it('When deleting an image with valid id, get back 204 response', async () => {
+    test('When deleting an image with valid id, get back 204 response', async () => {
       const body = fakeImageObject();
       const createResponse = await imageApiClient.post('/', body);
       const { id } = createResponse.data;
@@ -200,7 +201,7 @@ describe('Images API', () => {
 function withInvalidId(
   method: Extract<Method, 'post' | 'put' | 'delete' | 'patch' | 'get'> = 'get',
 ) {
-  it('When providing an invalid image id, get back 400 response', async () => {
+  test('When providing an invalid image id, get back 400 response', async () => {
     const invalidImageId = 'null';
     const body = fakeImageObject();
     const url = '/'.concat(invalidImageId);
@@ -220,7 +221,7 @@ function withInvalidId(
 function withNonExistingId(
   method: Extract<Method, 'post' | 'put' | 'delete' | 'patch' | 'get'> = 'post',
 ) {
-  it('When providing a non-existing image id, get back 404 response', async () => {
+  test('When providing a non-existing image id, get back 404 response', async () => {
     const id = new mongoose.Types.ObjectId();
     const body = fakeImageObject();
     const url = '/'.concat(id.toString());

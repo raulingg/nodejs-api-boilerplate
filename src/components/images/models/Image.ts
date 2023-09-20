@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import mongoose, { Schema } from 'mongoose';
-import type { ImageDocument, ImageModel, ImageSchema } from '../../../interfaces/mongoose.gen';
+import type { ImageDocument, ImageModel, ImageSchema } from '../../../interfaces/mongoose.gen.js';
 
 const schema: ImageSchema = new Schema(
   {

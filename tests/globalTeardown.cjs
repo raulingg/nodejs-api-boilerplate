@@ -13,7 +13,7 @@ const isCI = !!(
 module.exports = async () => {
   if (isCI) {
     // ️️️✅ Best Practice: Leave the DB up in dev environment
-    dockerCompose.down();
+    await dockerCompose.down();
   } else {
     // ✅ Best Practice: Clean the database occasionally
     // eslint-disable-next-line no-lonely-if

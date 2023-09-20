@@ -2,12 +2,23 @@ version: '3.9'
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: images-api
     ports:
       - 8081:8081
     environment:
-      NODE_ENV: development
       PORT: 8081
-      MONGO_URI: mongodb://images-db:27017/images
-    command: [ "node_modules/.bin/nodemon", "--config", "nodemon.json", "src/bin/www" ]
+      MONGO_URI: mongodb://images-db:27017/images-dev
+      LOG_DEST: ./logs/error.log
     volumes:
       - ./src:/app/src
+      - ./logs:/app/logs
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:4.4
+    container_name: images-db
+    ports:
+      - 27017:27017

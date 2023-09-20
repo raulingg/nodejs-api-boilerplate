@@ -1,16 +1,14 @@
 # Dev stage
-FROM node:18.16.0 as builder
+FROM node:18.16.0-alpine as builder
 
 USER node
 EXPOSE 8080
 
 WORKDIR /app
 
-COPY package.json package-lock.json tsconfig.json tsconfig.build.json ./
-COPY /src ./src
+COPY package.json package-lock.json ./
 # ✅ Safe install
 RUN npm ci
-RUN npm run build
 COPY . .
 
 # Run-time stage
@@ -24,8 +22,8 @@ WORKDIR /app
 
 COPY --chown=node:node --from=builder /app/package.json ./
 COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --from=builder /app/dist ./
+COPY --chown=node:node  /src ./src
 
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 
-CMD [ "node", "bin/www" ]
+CMD [ "node_modules/.bin/tsx", "watch", "src/bin/www.ts" ]

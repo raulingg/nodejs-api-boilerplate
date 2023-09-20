@@ -1,6 +1,6 @@
-import HTTP from 'node:http';
-import logger from './logger';
-import { AppError } from './utils';
+import * as HTTP from 'node:http';
+import logger from './logger.js';
+import { AppError } from './utils/index.js';
 import type { NextFunction, Request, Response } from 'express';
 
 const makeError = (statusCode: number) => (message: string) =>

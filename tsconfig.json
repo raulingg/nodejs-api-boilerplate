@@ -2,19 +2,21 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "target": "es2022",
+    "target": "ES2022",
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
-    "verbatimModuleSyntax": false,
+    "verbatimModuleSyntax": true,
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Bundler",
-    "module": "ES2022",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
+    "module": "NodeNext",
     "noEmit": true,
-    "lib": ["ES2022"]
+    "lib": ["ES2022"],
+    "outDir": "dist"
   },
-  "include": ["./src/", "./tests"]
+  "include": ["./src/", "./tests/"]
 }

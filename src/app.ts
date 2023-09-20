@@ -2,26 +2,27 @@ import type { NextFunction, Request, Response } from 'express';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import expressPinoLogger from 'express-pino-logger';
 import { errors } from 'celebrate';
-import logger from './logger';
-import buildRoutes from './routes';
-import { globalErrorMiddleware } from './errorHandler';
-import { AppError } from './utils';
+import logger from './logger.js';
+import { pinoHttp } from 'pino-http';
+import config from './config/index.js';
+import buildRoutes from './routes.js';
+import { globalErrorMiddleware } from './errorHandler.js';
+import { AppError } from './utils/index.js';
 
 const app = express();
 
 /**
  * Middleware registration.
  */
-app.use(cors());
+app.use(cors(config.cors));
 app.use(helmet());
 app.use(express.json());
 
 /**
  * Logging middleware
  */
-app.use(expressPinoLogger({ logger }));
+app.use(pinoHttp({ logger }));
 
 /**
  * Route registration.

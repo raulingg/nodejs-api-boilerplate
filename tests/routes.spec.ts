@@ -1,4 +1,5 @@
-import { default as mongoose } from 'mongoose';
+import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
+import mongoose from 'mongoose';
 import { ApiClient, ApiResponses, ApiServer } from './utils/api';
 import type { AxiosInstance } from 'axios';
 

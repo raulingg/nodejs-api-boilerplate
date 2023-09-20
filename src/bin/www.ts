@@ -1,11 +1,10 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 import { createServer } from 'http';
 import mongoose from 'mongoose';
 import { createTerminus } from '@godaddy/terminus';
-import app from '../app';
-import config from '../config';
-import { handleError, isOperationalError } from '../errorHandler';
+import app from '../app.js';
+import config from '../config/index.js';
+import { handleError, isOperationalError } from '../errorHandler.js';
 
 const {
   app: { port, host },

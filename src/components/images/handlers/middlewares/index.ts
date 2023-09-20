@@ -1,5 +1,5 @@
 import { celebrate, Joi, Segments } from 'celebrate';
-import { requestValidators } from '../../../../utils';
+import { requestValidators } from '../../../../utils/index.js';
 
 export const create = celebrate({
   [Segments.BODY]: Joi.object().keys({

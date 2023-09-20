@@ -1,5 +1,5 @@
-import pino from 'pino';
-import config from './config';
+import { pino } from 'pino';
+import config from './config/index.js';
 
 const customLevels = {
   http: 10,
@@ -13,7 +13,6 @@ const customLevels = {
 const destStrategiesByEnv = {
   development: {
     dest: config.logger.dest,
-    minLength: 4096,
     sync: true,
     mkdir: true,
   },

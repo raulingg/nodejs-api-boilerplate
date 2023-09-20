@@ -1,8 +1,9 @@
+import { describe, expect, beforeAll, afterAll, afterEach, jest, test } from '@jest/globals';
 import type { AxiosInstance } from 'axios';
 import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
 import logger from '../../../src/logger';
 import { AppError } from '../../../src/utils';
-import { default as mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -49,7 +50,7 @@ describe('Images API', () => {
       await mongoose.connection.close();
     });
 
-    it('When fetching an image, Then should get back 500 response', async () => {
+    test('When fetching an image, Then should get back 500 response', async () => {
       const id = new mongoose.Types.ObjectId();
       const url = '/'.concat(id.toString());
       const { data, status } = await imageApiClient.get(url);
@@ -57,7 +58,7 @@ describe('Images API', () => {
       expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
-    it('When creating an image, Then should get back 500 response', async () => {
+    test('When creating an image, Then should get back 500 response', async () => {
       const body = fakeImageObject();
 
       const { data, status } = await imageApiClient.post('/', body);
@@ -65,7 +66,7 @@ describe('Images API', () => {
       expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
-    it('When updating an image, Then should get back 500 response', async () => {
+    test('When updating an image, Then should get back 500 response', async () => {
       const id = new mongoose.Types.ObjectId();
       const url = '/'.concat(id.toString());
       const updates = { name: 'my-new-name' };
@@ -75,7 +76,7 @@ describe('Images API', () => {
       expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
-    it('When deleting an image, Then should get back 500 response', async () => {
+    test('When deleting an image, Then should get back 500 response', async () => {
       const id = new mongoose.Types.ObjectId();
       const url = '/'.concat(id.toString());
 
@@ -86,7 +87,7 @@ describe('Images API', () => {
   });
 
   describe(`Logging`, () => {
-    it("When there's an unexpected error, Then should log error", async () => {
+    test("When there's an unexpected error, Then should log error", async () => {
       await mongoose.connection.close();
       const id = new mongoose.Types.ObjectId();
       const url = '/'.concat(id.toString());

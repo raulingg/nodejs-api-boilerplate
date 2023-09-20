@@ -1,4 +1,9 @@
 module.exports = {
+  root: true,
+  env: {
+    node: true,
+    es2022: true,
+  },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'es2022',
@@ -25,15 +30,16 @@ module.exports = {
       },
     ],
   },
-  env: {
-    node: true,
-    es2022: true,
-  },
-  root: true,
   overrides: [
     {
-      files: ['*.spec.ts', '*.test.ts', '*.cjs'],
+      files: ['tests/**/*', '**/*.cjs'],
       extends: ['plugin:@typescript-eslint/disable-type-checked'],
+    },
+    {
+      files: ['**/*.cjs'],
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
+      },
     },
   ],
 };
