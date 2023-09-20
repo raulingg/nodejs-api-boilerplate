@@ -1,29 +1,29 @@
 import HTTP from 'http';
 
-type ResponseOk = {
+export type ResponseOk = {
   status: StatusOk;
-  data: Record<string, any> | string;
+  data: Record<string, unknown> | string;
 };
 
-type ResponseError = {
+export type ResponseError = {
   status: number;
   data: ApplicationError;
 };
 
-type ResponseBadRequest = {
+export type ResponseBadRequest = {
   status: 400;
   data: ApplicationError & {
     validation: Record<string, ValidationError>;
   };
 };
 
-type ApplicationError = {
+export type ApplicationError = {
   error?: string;
   message: string;
   statusCode: number;
 };
 
-type ValidationError = {
+export type ValidationError = {
   source: string;
   keys: string[];
   message: string;
@@ -33,7 +33,7 @@ type StatusOk = 200 | 201 | 202 | 203 | 204;
 
 const makeResponse =
   (statusCode: StatusOk) =>
-  (data: Record<string, any> | string): ResponseOk => ({
+  (data: Record<string, unknown> | string = ''): ResponseOk => ({
     status: statusCode,
     data,
   });

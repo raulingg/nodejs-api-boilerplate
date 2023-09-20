@@ -1,4 +1,4 @@
-import { CustomHelpers } from 'joi';
+import type { CustomHelpers } from 'joi';
 import { isValidObjectId } from 'mongoose';
 
 export const objectId = (value: string, helper: CustomHelpers) => {

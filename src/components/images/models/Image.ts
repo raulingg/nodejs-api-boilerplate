@@ -1,10 +1,6 @@
 /* eslint-disable no-param-reassign */
 import mongoose, { Schema } from 'mongoose';
-import {
-  ImageDocument,
-  ImageModel,
-  ImageSchema,
-} from '../../../interfaces/mongoose.gen';
+import type { ImageDocument, ImageModel, ImageSchema } from '../../../interfaces/mongoose.gen';
 
 const schema: ImageSchema = new Schema(
   {
@@ -39,8 +35,9 @@ const schema: ImageSchema = new Schema(
   {
     versionKey: false,
     timestamps: true,
-    toObject: {
-      transform(doc, ret, options) {
+    toJSON: {
+      virtuals: true,
+      transform(doc, ret: Partial<ImageDocument>) {
         ret.id = ret._id;
         delete ret._id;
 

@@ -1,6 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
   globalSetup: './tests/globalSetup.cjs',
   globalTeardown: './tests/globalTeardown.cjs',

@@ -1,6 +1,7 @@
-import { default as mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
 import type { AxiosInstance, Method } from 'axios';
+import type { ImageObject } from '../../../src/interfaces/mongoose.gen';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -11,7 +12,7 @@ const defaultImageProps = {
   height: 1000,
 };
 
-const fakeImageObject = (props: Record<string, any> = {}) => ({
+const fakeImageObject = (props: Partial<ImageObject> = {}) => ({
   ...defaultImageProps,
   ...props,
 });
@@ -103,7 +104,10 @@ describe('Images API', () => {
     });
 
     it('When providing non-schema keys, get back 400 response', async () => {
-      const body = { ...fakeImageObject(), extra: 'non-schema key' };
+      const body = {
+        ...fakeImageObject(),
+        extra: 'non-schema key',
+      };
 
       const { status, data } = await imageApiClient.post('/', body);
 
@@ -128,9 +132,10 @@ describe('Images API', () => {
       const response = await imageApiClient.patch(url, updates);
       const { status, data } = await imageApiClient.get(url);
 
-      expect({ status: response.status, data: response.data }).toStrictEqual(
-        ApiResponses.okNotContent(''),
-      );
+      expect({
+        status: response.status,
+        data: response.data,
+      }).toStrictEqual(ApiResponses.okNotContent());
       expect({ status, data }).toStrictEqual(
         ApiResponses.ok({
           ...body,
@@ -177,9 +182,10 @@ describe('Images API', () => {
       const response = await imageApiClient.delete(url);
       const { status, data } = await imageApiClient.get(url);
 
-      expect({ status: response.status, data: response.data }).toStrictEqual(
-        ApiResponses.okNotContent(''),
-      );
+      expect({
+        status: response.status,
+        data: response.data,
+      }).toStrictEqual(ApiResponses.okNotContent(''));
       expect({ status, data }).toStrictEqual(
         ApiResponses.notFound(`Image with id = "${id}" not found`),
       );

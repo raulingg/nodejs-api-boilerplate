@@ -1,4 +1,4 @@
-import { Application, Request, Response } from 'express';
+import type { Application, Request, Response } from 'express';
 import { router } from './components/images/handlers';
 
 export default (app: Application) => {

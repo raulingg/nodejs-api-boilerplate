@@ -1,8 +1,8 @@
-import { default as mongoose } from 'mongoose';
+import type { AxiosInstance } from 'axios';
 import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
 import logger from '../../../src/logger';
 import { AppError } from '../../../src/utils';
-import { AxiosInstance } from 'axios';
+import { default as mongoose } from 'mongoose';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -17,8 +17,7 @@ const fakeImageObject = (props = {}) => ({
   ...defaultImageProps,
   ...props,
 });
-const MongoClientErrorMessage =
-  'Client must be connected before running operations';
+const MongoClientErrorMessage = 'Client must be connected before running operations';
 
 const apiServer = ApiServer();
 const endpoint = '/images';
@@ -55,9 +54,7 @@ describe('Images API', () => {
       const url = '/'.concat(id.toString());
       const { data, status } = await imageApiClient.get(url);
 
-      expect({ data, status }).toStrictEqual(
-        ApiResponses.internalError(MongoClientErrorMessage),
-      );
+      expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
     it('When creating an image, Then should get back 500 response', async () => {
@@ -65,9 +62,7 @@ describe('Images API', () => {
 
       const { data, status } = await imageApiClient.post('/', body);
 
-      expect({ data, status }).toStrictEqual(
-        ApiResponses.internalError(MongoClientErrorMessage),
-      );
+      expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
     it('When updating an image, Then should get back 500 response', async () => {
@@ -77,9 +72,7 @@ describe('Images API', () => {
 
       const { data, status } = await imageApiClient.patch(url, updates);
 
-      expect({ data, status }).toStrictEqual(
-        ApiResponses.internalError(MongoClientErrorMessage),
-      );
+      expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
 
     it('When deleting an image, Then should get back 500 response', async () => {
@@ -88,9 +81,7 @@ describe('Images API', () => {
 
       const { data, status } = await imageApiClient.delete(url);
 
-      expect({ data, status }).toStrictEqual(
-        ApiResponses.internalError(MongoClientErrorMessage),
-      );
+      expect({ data, status }).toStrictEqual(ApiResponses.internalError(MongoClientErrorMessage));
     });
   });
 

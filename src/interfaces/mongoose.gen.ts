@@ -47,6 +47,7 @@ export type Image = {
     deletedAt?: Date;
   };
   _id: mongoose.Types.ObjectId;
+  id: string,
   createdAt?: Date;
   updatedAt?: Date;
 };

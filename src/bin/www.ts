@@ -1,31 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 import { createServer } from 'http';
-import { connect, connection } from 'mongoose';
+import mongoose from 'mongoose';
 import { createTerminus } from '@godaddy/terminus';
 import app from '../app';
 import config from '../config';
 import { handleError, isOperationalError } from '../errorHandler';
-import { error } from '../logger';
 
-const { app: { port, host }, db } = config;
-
-/**
- * ODM initialization.
- */
-connect(db.connectionString, db.connectionOptions)
-  .then(() => {
-    const server = createServer(app);
-    createTerminus(server, { signals: ['SIGTERM', 'SIGINT'] });
-
-    server.listen(port);
-    console.log(`server running at http://${host}:${port}`);
-
-    connection.on('error', console.error);
-  })
-  .catch((err) => {
-    error(err);
-  });
+const {
+  app: { port, host },
+  db,
+} = config;
 
 process.on('unhandledRejection', (err) => {
   // since we already have fallback handler for unhandled errors (see below),
@@ -39,3 +24,16 @@ process.on('uncaughtException', (err) => {
 
   if (!operational) process.emit('SIGTERM');
 });
+
+/**
+ * ODM initialization.
+ */
+mongoose.set('strictQuery', false);
+await mongoose.connect(db.connectionString, db.connectionOptions);
+const server = createServer(app);
+createTerminus(server, { signals: ['SIGTERM', 'SIGINT'] });
+
+server.listen(port);
+console.log(`server running at http://${host}:${port}`);
+
+mongoose.connection.on('error', console.error);

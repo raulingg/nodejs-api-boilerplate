@@ -1,4 +1,5 @@
-import express, { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import expressPinoLogger from 'express-pino-logger';
@@ -32,7 +33,10 @@ buildRoutes(app);
  */
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(
-    new AppError({ message: `path ${req.path} undefined`, statusCode: 404 }),
+    new AppError({
+      message: `path ${req.path} undefined`,
+      statusCode: 404,
+    }),
   );
 });
 

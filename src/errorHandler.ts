@@ -1,7 +1,7 @@
 import HTTP from 'node:http';
 import logger from './logger';
 import { AppError } from './utils';
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 const makeError = (statusCode: number) => (message: string) =>
   new AppError({ message, statusCode });
@@ -32,14 +32,11 @@ export const globalErrorMiddleware = (
   if (!isOperationalError(err)) process.emit('SIGINT');
 };
 
-const isOperationalError = (err: AppError | Error) => {
+export const isOperationalError = (err: AppError | Error) => {
   return err instanceof AppError ? err.operational : false;
 };
 
 // TODO: email admins, send event to an error-tracking system like Sentry,...
 export const handleError = (err: AppError | Error) => {
-  logger.error(
-    err,
-    'Error message from the centralized error-handling component',
-  );
+  logger.error(err, 'Error message from the centralized error-handling component');
 };
