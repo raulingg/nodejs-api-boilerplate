@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { createServer } from 'http';
 import mongoose from 'mongoose';
+import { createServer } from 'http';
 import { createTerminus } from '@godaddy/terminus';
 import app from '../app.js';
 import config from '../config/index.js';
-import { handleError, isOperationalError } from '../errorHandler.js';
+import { handleError } from '../errorHandler.js';
 
 const {
   app: { port, host },
@@ -17,22 +17,40 @@ process.on('unhandledRejection', (err) => {
   throw err;
 });
 
-process.on('uncaughtException', (err) => {
-  const operational = isOperationalError(err);
-  handleError(err);
-
-  if (!operational) process.emit('SIGTERM');
-});
+process.on('uncaughtException', handleError);
 
 /**
  * ODM initialization.
  */
 mongoose.set('strictQuery', false);
-await mongoose.connect(db.connectionString, db.connectionOptions);
-const server = createServer(app);
-createTerminus(server, { signals: ['SIGTERM', 'SIGINT'] });
+await mongoose.connect(db.uri, db.options);
+mongoose.connection.on('error', console.error);
 
-server.listen(port);
+const server = createServer(app);
+
+/**
+ * Health checks and graceful shutdown initialization.
+ */
+createTerminus(server, {
+  signals: ['SIGTERM', 'SIGINT'],
+  healthChecks: {
+    '/healthcheck': onHealthCheck,
+  },
+  onSignal,
+}).listen(port);
+
 console.log(`server running at http://${host}:${port}`);
 
-mongoose.connection.on('error', console.error);
+async function onHealthCheck() {
+  return await mongoose.connection.db.command({ ping: 1 });
+}
+
+async function onSignal() {
+  try {
+    console.log('server is starting cleanup');
+    await mongoose.connection.close();
+    console.log('MongoDB connection has been closed');
+  } catch (error) {
+    console.error('error during MongoDB connection close', (error as Error).stack);
+  }
+}

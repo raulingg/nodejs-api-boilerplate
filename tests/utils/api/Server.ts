@@ -1,7 +1,7 @@
 import type { Server } from 'http';
 import type { AddressInfo } from 'net';
 import isPortReachable from 'is-port-reachable';
-import app from '../../../src/app';
+import app from '../../../src/app.js';
 
 export default () => {
   let serverConnection: Server;

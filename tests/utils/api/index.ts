@@ -1,3 +1,3 @@
-export { default as ApiClient } from './Client';
-export { default as ApiServer } from './Server';
-export * as ApiResponses from './Responses';
+export { default as ApiClient } from './Client.js';
+export { default as ApiServer } from './Server.js';
+export * as ApiResponses from './Responses.js';

@@ -1,9 +1,10 @@
 import { describe, expect, beforeAll, afterAll, afterEach, jest, test } from '@jest/globals';
 import type { AxiosInstance } from 'axios';
-import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
-import logger from '../../../src/logger';
-import { AppError } from '../../../src/utils';
+import { ApiClient, ApiResponses, ApiServer } from '../../utils/api/index.js';
+import logger from '../../../src/logger.js';
+import { AppError } from '../../../src/utils/index.js';
 import mongoose from 'mongoose';
+import config from '../../config.js';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -25,7 +26,7 @@ const endpoint = '/images';
 let imageApiClient: AxiosInstance;
 
 beforeAll(async () => {
-  await mongoose.connect(`mongodb://localhost:27018/images-test`);
+  await mongoose.connect(config.db.uri, config.db.options);
 
   const port = await apiServer.init(null);
   await apiServer.throwIfUnreachable();

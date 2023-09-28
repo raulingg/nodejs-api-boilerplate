@@ -2,13 +2,12 @@ import type { NextFunction, Request, Response } from 'express';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import { errors } from 'celebrate';
+import { errors as validationErrorMiddleware } from 'celebrate';
 import logger from './logger.js';
 import { pinoHttp } from 'pino-http';
 import config from './config/index.js';
 import buildRoutes from './routes.js';
-import { globalErrorMiddleware } from './errorHandler.js';
-import { AppError } from './utils/index.js';
+import { globalErrorMiddleware, errors } from './errorHandler.js';
 
 const app = express();
 
@@ -33,18 +32,13 @@ buildRoutes(app);
  * 404 handler.
  */
 app.use((req: Request, res: Response, next: NextFunction) => {
-  next(
-    new AppError({
-      message: `path ${req.path} undefined`,
-      statusCode: 404,
-    }),
-  );
+  next(errors.NotFound(`path ${req.path} undefined`));
 });
 
 /**
  * Request-validation error middleware
  */
-app.use(errors());
+app.use(validationErrorMiddleware());
 
 /**
  * Global error middleware

@@ -18,7 +18,8 @@ module.exports = async () => {
     // ✅ Best Practice: Clean the database occasionally
     // eslint-disable-next-line no-lonely-if
     if (Math.ceil(Math.random() * 10) === 10) {
-      await mongoose.connect(`mongodb://localhost:27018/images-test`);
+      const { default: config } = await import('./config.js');
+      await mongoose.connect(config.db.uri, config.db.options);
       await mongoose.connection.db.dropDatabase();
     }
   }

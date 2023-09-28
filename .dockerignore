@@ -9,5 +9,5 @@
 **/.editorconfig
 **/.aws
 **/dist
-**/log
 *Dockerfile*
+*docker-compose*

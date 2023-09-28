@@ -5,9 +5,11 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node dist/bin/www.js",
-    "dev": "tsx watch src/bin/www.ts | npx pino-pretty -t SYS:standard",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest .",
+    "dev": "cross-env NODE_ENV=development tsx watch src/bin/www.ts",
+    "start": "npm run build && cross-env NODE_ENV=development node dist/bin/www.js",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles",
+    "test:watch": "npm run test -- --watch",
+    "test:coverage": "npm run test -- --coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsc -p ./tsconfig.build.json",
@@ -19,7 +21,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@godaddy/terminus": "^4.9.0",
+    "@godaddy/terminus": "^4.12.1",
     "celebrate": "^15.0.0",
     "cors": "^2.8.5",
     "express": "^4.18.2",

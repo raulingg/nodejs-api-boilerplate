@@ -1,8 +1,9 @@
 import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
 import mongoose from 'mongoose';
-import { ApiClient, ApiResponses, ApiServer } from '../../utils/api';
+import { ApiClient, ApiResponses, ApiServer } from '../../utils/api/index.js';
 import type { AxiosInstance, Method } from 'axios';
-import type { ImageObject } from '../../../src/interfaces/mongoose.gen';
+import type { ImageObject } from '../../../src/interfaces/mongoose.gen.js';
+import config from '../../config.js';
 
 const defaultImageProps = {
   name: 'my-image',
@@ -23,7 +24,7 @@ const endpoint = '/images';
 let imageApiClient: AxiosInstance;
 
 beforeAll(async () => {
-  await mongoose.connect(`mongodb://localhost:27018/images-test`);
+  await mongoose.connect(config.db.uri, config.db.options);
 
   // ️️️✅ Best Practice: Place the backend under test within the same process
   // ️️️✅ Best Practice 8.13: Specify no port for testing, only in production

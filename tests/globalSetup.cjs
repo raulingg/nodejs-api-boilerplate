@@ -1,14 +1,13 @@
 const path = require('path');
 const dockerCompose = require('docker-compose');
-const isPortReachable = require('is-port-reachable');
+const mongoose = require('mongoose');
 
 module.exports = async () => {
   console.time('globalSetup');
 
   // ️️️✅ Best Practice: Speed up during development, if already live then do nothing
-  const isDBReachable = await isPortReachable(27018);
-
-  if (!isDBReachable) {
+  if (!(await isDBReachable())) {
+    console.log('Starting DB container');
     // ️️️✅ Best Practice: Start the infrastructure within a test hook - No failures occur because the DB is down
     await dockerCompose.upAll({
       cwd: path.join(__dirname),
@@ -20,3 +19,17 @@ module.exports = async () => {
 
   console.timeEnd('globalSetup');
 };
+
+async function isDBReachable() {
+  if (mongoose.connection.readyState === 1) return true;
+
+  try {
+    const { default: config } = await import('./config.js');
+    await mongoose.connect(config.db.uri, config.db.options);
+    console.log('DB is reachable');
+    return true;
+  } catch (error) {
+    console.log('DB is unreachable');
+    return false;
+  }
+}

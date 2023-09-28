@@ -1,13 +1,14 @@
 import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
 import mongoose from 'mongoose';
-import { ApiClient, ApiResponses, ApiServer } from './utils/api';
 import type { AxiosInstance } from 'axios';
+import { ApiClient, ApiResponses, ApiServer } from './utils/api/index.js';
+import config from './config.js';
 
 const apiServer = ApiServer();
 let apiClient: AxiosInstance;
 
 beforeAll(async () => {
-  await mongoose.connect(`mongodb://localhost:27018/images-test`);
+  await mongoose.connect(config.db.uri, config.db.options);
 
   const port = await apiServer.init(null);
   await apiServer.throwIfUnreachable();
