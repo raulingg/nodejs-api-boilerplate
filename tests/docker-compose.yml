@@ -1,9 +1,0 @@
-services:
-  mongo:
-    image: mongo:4.4
-    ports:
-      - "27017:27017"
-
-networks:
-  nodejs-api-boilerplate:
-    external: true

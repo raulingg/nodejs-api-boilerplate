@@ -4,35 +4,31 @@ import isPortReachable from 'is-port-reachable';
 import app from '../../../src/app.js';
 
 export default () => {
-  let serverConnection: Server;
+  let server: Server;
 
   const init = (port = null): PromiseLike<number> => {
     return new Promise((resolve) => {
-      serverConnection = app.listen(port, () => {
-        const { port } = serverConnection.address() as AddressInfo;
+      server = app.listen(port, () => {
+        const { port } = server.address() as AddressInfo;
         resolve(port);
       });
     });
   };
 
   const stop = async () => {
-    const { port } = serverConnection.address() as AddressInfo;
-    const isWebServerReachable = await isPortReachable(port);
+    const { port } = server.address() as AddressInfo;
 
-    if (isWebServerReachable) {
+    if (await isPortReachable(port)) {
       return new Promise((resolve) => {
-        serverConnection.close(resolve);
+        server.close(resolve);
       });
     }
-
-    return Promise.resolve();
   };
 
   const throwIfUnreachable = async () => {
-    const { port } = serverConnection.address() as AddressInfo;
-    const isWebServerReachable = await isPortReachable(port);
+    const { port } = server.address() as AddressInfo;
 
-    if (!isWebServerReachable) {
+    if (!(await isPortReachable(port))) {
       throw new Error(`Webserver is unreachable at port ${port}`);
     }
   };
