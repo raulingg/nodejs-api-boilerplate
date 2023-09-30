@@ -1,4 +1,4 @@
-import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
+import { describe, expect, beforeAll, afterAll, test, jest } from '@jest/globals';
 import mongoose from 'mongoose';
 import type { AxiosInstance } from 'axios';
 import { ApiClient, ApiResponses, ApiServer } from './utils/api/index.js';
@@ -23,22 +23,54 @@ afterAll(async () => {
   await apiServer.stop();
 });
 
-describe('Welcome /', () => {
-  test('When / is visited, Then get back 200 and a welcome message', async () => {
-    const endpoint = '/';
+describe('Common routes', () => {
+  describe('Welcome /', () => {
+    test('When / is visited, Then return 200 response', async () => {
+      const endpoint = '/';
 
-    const { status, data } = await apiClient.get<string>(endpoint);
+      const { status, data } = await apiClient.get<string>(endpoint);
 
-    expect({ status, data }).toStrictEqual(ApiResponses.ok('Hello world - Images API'));
+      expect({ status, data }).toStrictEqual(ApiResponses.ok('Hello world - Images API'));
+    });
   });
-});
 
-describe('404 - Not Found', () => {
-  test('When an unset path is visited, Then get back 404 response', async () => {
-    const endpoint = '/whatever';
+  describe('404 - Not Found', () => {
+    test('When an unset path is visited, Then return 404 response', async () => {
+      const endpoint = '/whatever';
 
-    const { status, data } = await apiClient.get<string>(endpoint);
+      const { status, data } = await apiClient.get<string>(endpoint);
 
-    expect({ status, data }).toStrictEqual(ApiResponses.notFound(`path /whatever undefined`));
+      expect({ status, data }).toStrictEqual(ApiResponses.notFound(`path /whatever undefined`));
+    });
+  });
+
+  describe('Health check', () => {
+    const endpoint = '/health';
+
+    test(`When ${endpoint} is visited, Then return 200 response and info`, async () => {
+      const { status, data } = await apiClient.get<string>(endpoint);
+
+      expect({ status, data }).toStrictEqual(
+        ApiResponses.ok({ status: 'ok', info: { mongo: { status: 'up' } } }),
+      );
+    });
+
+    test(`When ${endpoint} is visited and db is down, Then return 504 response and info`, async () => {
+      jest.spyOn(mongoose.connection.db, 'command').mockImplementationOnce(() => ({ ok: 0 }));
+
+      const { status, data } = await apiClient.get<string>(endpoint);
+
+      expect({ status, data }).toStrictEqual({
+        status: 503,
+        data: {
+          status: 'error',
+          error: {
+            mongo: {
+              status: 'down',
+            },
+          },
+        },
+      });
+    });
   });
 });

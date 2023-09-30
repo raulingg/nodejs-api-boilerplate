@@ -33,17 +33,10 @@ const server = createServer(app);
  */
 createTerminus(server, {
   signals: ['SIGTERM', 'SIGINT'],
-  healthChecks: {
-    '/healthcheck': onHealthCheck,
-  },
   onSignal,
 }).listen(port);
 
 console.log(`server running at http://${host}:${port}`);
-
-async function onHealthCheck() {
-  return await mongoose.connection.db.command({ ping: 1 });
-}
 
 async function onSignal() {
   try {
