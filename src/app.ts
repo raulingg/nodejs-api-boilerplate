@@ -7,7 +7,7 @@ import logger from './logger.js';
 import { pinoHttp } from 'pino-http';
 import config from './config/index.js';
 import buildRoutes from './routes.js';
-import { globalErrorMiddleware, errors } from './errorHandler.js';
+import { globalErrorMiddleware, httpErrors } from './errorHandler.js';
 
 const app = express();
 
@@ -32,7 +32,7 @@ buildRoutes(app);
  * 404 handler.
  */
 app.use((req: Request, res: Response, next: NextFunction) => {
-  next(errors.NotFound(`path ${req.path} undefined`));
+  next(httpErrors.NotFound(`path ${req.path} undefined`));
 });
 
 /**

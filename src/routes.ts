@@ -1,5 +1,5 @@
 import type { Application, Request, Response } from 'express';
-import { router } from './components/images/handlers/index.js';
+import { router as imageRouter } from './components/images/handlers/index.js';
 import mongoose from 'mongoose';
 
 export default (app: Application) => {
@@ -27,5 +27,5 @@ export default (app: Application) => {
     });
   });
 
-  app.use('/images', router);
+  app.use('/images', imageRouter);
 };

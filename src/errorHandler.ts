@@ -1,13 +1,20 @@
 import HTTP from 'node:http';
 import logger from './logger.js';
-import { AppError } from './utils/index.js';
+import { AppError, type AppErrorParams } from './utils/index.js';
 import type { NextFunction, Request, Response } from 'express';
 
-const makeError = (statusCode: number) => (message: string) =>
-  new AppError({ message, statusCode });
+export const makeError = (name: string) => (params: AppErrorParams) =>
+  new AppError({ name, ...params });
+
+export const makeHttpError = makeError('HTTPError');
 
 export const errors = {
-  NotFound: makeError(404),
+  DatabaseError: makeError('DatabaseError'),
+  ResourceNotFoundError: makeError('ResourceNotFoundError'),
+};
+
+export const httpErrors = {
+  NotFound: (message: string) => makeHttpError({ statusCode: 404, message }),
 };
 
 export const globalErrorMiddleware = (

@@ -1,28 +1,39 @@
 import { errors } from '../../../errorHandler.js';
-import { Image } from '../models/index.js';
-import type { ImageObject } from '../../../interfaces/mongoose.gen.js';
+import type { ImageModel, ImageObject } from '../../../interfaces/mongoose.gen.js';
 
-export const ImageService = () => {
+export const ImageService = (imageRepository: ImageModel) => {
   const getById = async (id: string) => {
-    return (await Image.findById(id).orFail(ImageNotFoundError(id))).toJSON<ImageObject>();
+    const image = await imageRepository.findById(id);
+    if (!image) {
+      throw ImageNotFoundError(id);
+    }
+    return image.toJSON<ImageObject>();
   };
 
   const create = async (newImage: ImageObject) => {
-    const imageInstance = await Image.create(newImage);
+    const imageInstance = await imageRepository.create(newImage);
+
     return imageInstance.toJSON<ImageObject>();
   };
 
   const updateById = async (id: string, updates: Partial<ImageObject>) => {
-    return (
-      await Image.findByIdAndUpdate(id, updates).orFail(ImageNotFoundError(id))
-    ).toJSON<ImageObject>();
+    const image = await imageRepository.findByIdAndUpdate(id, updates);
+    if (!image) {
+      throw ImageNotFoundError(id);
+    }
+
+    return image.toJSON<ImageObject>();
   };
 
   const deleteById = async (id: string): Promise<void> => {
-    await Image.findByIdAndDelete(id, { projection: '_id' }).orFail(ImageNotFoundError(id));
+    const result = await imageRepository.findByIdAndDelete(id, { projection: '_id' });
+    if (!result) {
+      throw ImageNotFoundError(id);
+    }
   };
 
   return { create, updateById, deleteById, getById };
 };
 
-const ImageNotFoundError = (id: string) => errors.NotFound(`Image with id = "${id}" not found`);
+const ImageNotFoundError = (id: string) =>
+  errors.ResourceNotFoundError({ message: `Image with id = "${id}" not found`, statusCode: 404 });
