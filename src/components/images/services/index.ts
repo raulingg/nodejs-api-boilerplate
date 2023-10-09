@@ -1,4 +1,6 @@
-import { ImageService } from './ImageService.js';
-import { imageRepository } from '../models/index.js';
+import { ImageServiceImpl } from './ImageServiceImpl.js';
+import { MongooseImageRepo } from '../repos/MongooseImageRepo.js';
+import { imageModel } from '../models/index.js';
 
-export const imageService = ImageService(imageRepository);
+const imageRepo = MongooseImageRepo(imageModel);
+export const imageService = ImageServiceImpl(imageRepo);

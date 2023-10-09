@@ -2,7 +2,6 @@ import { describe, expect, beforeAll, afterAll, test } from '@jest/globals';
 import mongoose from 'mongoose';
 import { ApiClient, ApiResponses, ApiServer } from '../../utils/api/index.js';
 import type { AxiosInstance, Method } from 'axios';
-import type { ImageObject } from '../../../src/interfaces/mongoose.gen.js';
 import config from '../../config.js';
 
 const defaultImageProps = {
@@ -14,7 +13,7 @@ const defaultImageProps = {
   height: 1000,
 };
 
-const fakeImageObject = (props: Partial<ImageObject> = {}) => ({
+const fakeImageObject = (props = {}) => ({
   ...defaultImageProps,
   ...props,
 });
@@ -62,7 +61,6 @@ describe('Images API', () => {
         data: {
           ...body,
           id,
-          state: { actions: [] },
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         },
@@ -84,7 +82,6 @@ describe('Images API', () => {
         ApiResponses.okCreated({
           ...body,
           id: expect.any(String),
-          state: { actions: [] },
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         }),
@@ -143,7 +140,6 @@ describe('Images API', () => {
           ...body,
           id,
           name: 'my-new-name',
-          state: { actions: [] },
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
         }),

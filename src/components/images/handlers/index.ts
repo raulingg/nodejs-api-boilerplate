@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 import * as middlewares from './middlewares/index.js';
 import { imageService } from '../services/index.js';
-import type { ImageObject } from '../../../interfaces/mongoose.gen.js';
+import type { Image } from '../entities/Image.js';
 
 export const router = Router();
 
@@ -11,7 +11,7 @@ router.get(
   middlewares.validParamId,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const newImage = await imageService.getById(req.params.id as string);
+      const newImage = await imageService.findImageById(req.params.id as string);
       res.status(200).json(newImage);
     } catch (err) {
       next(err);
@@ -21,7 +21,7 @@ router.get(
 
 router.post('/', middlewares.create, async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const newImage = await imageService.create(req.body as ImageObject);
+    const newImage = await imageService.createImage(req.body as Partial<Image>);
     res.status(201).json(newImage);
   } catch (err) {
     next(err);
@@ -33,7 +33,7 @@ router.patch(
   middlewares.update,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await imageService.updateById(req.params.id as string, req.body as ImageObject);
+      await imageService.updateImage(req.params.id as string, req.body as Partial<Image>);
       res.status(204).send();
     } catch (err) {
       next(err);
@@ -46,7 +46,7 @@ router.delete(
   middlewares.validParamId,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await imageService.deleteById(req.params.id as string);
+      await imageService.deleteImage(req.params.id as string);
       res.status(204).send();
     } catch (err) {
       next(err);

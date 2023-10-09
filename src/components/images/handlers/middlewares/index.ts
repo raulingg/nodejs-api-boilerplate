@@ -9,13 +9,6 @@ export const create = celebrate({
     size: Joi.number().positive(),
     width: Joi.number().positive(),
     height: Joi.number().positive(),
-    source: Joi.object({
-      action: Joi.object({
-        type: Joi.string().trim(),
-        enum: Joi.string().valid('UPLOAD', 'FETCH', 'TASK'),
-      }).allow(null),
-      url: Joi.string().trim(),
-    }),
   }),
 });
 
@@ -27,13 +20,6 @@ export const update = celebrate({
     size: Joi.number().positive(),
     width: Joi.number().positive(),
     height: Joi.number().positive(),
-    source: Joi.object({
-      action: Joi.object({
-        type: Joi.string().trim(),
-        enum: Joi.string().valid('UPLOAD', 'FETCH', 'TASK'),
-      }).allow(null),
-      url: Joi.string().trim(),
-    }),
   }),
   [Segments.PARAMS]: {
     id: Joi.string().custom(requestValidators.objectId),
